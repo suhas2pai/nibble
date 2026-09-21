@@ -1,0 +1,13 @@
+{
+  "name": "nibble",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI concepts in bite-size lessons. Content lives in /content as plain JSON.",
+  "scripts": {
+    "dev": "node tools/serve.mjs",
+    "validate": "node tools/validate.mjs",
+    "build": "node tools/build.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

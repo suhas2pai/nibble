@@ -1,0 +1,101 @@
+{
+  "id": "how-an-llm-answers",
+  "title": "How an LLM answers",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "widget",
+      "widget": "tokenizer",
+      "say": "LLMs don't read words. They read **tokens**, small chunks of text. Type below and watch your text split.",
+      "props": {
+        "text": "Unbelievably helpful assistants",
+        "note": "This is a simplified splitter. Real tokenizers differ, but long and rare words do break into more pieces."
+      }
+    },
+    {
+      "id": "c2",
+      "type": "mc",
+      "q": "What does an LLM actually predict?",
+      "options": [
+        "The next token",
+        "The truth",
+        "What you meant to ask",
+        "A row in a database"
+      ],
+      "answer": 0,
+      "why": "It predicts the most likely next token, adds it, and repeats. Every fluent answer comes from that loop."
+    },
+    {
+      "id": "c3",
+      "type": "widget",
+      "widget": "temperature",
+      "say": "At every step the model weighs candidate tokens. **Temperature** decides how boldly it picks. Slide it, then sample a few times.",
+      "props": {
+        "prompt": "The best pizza topping is",
+        "button": "Pick a topping",
+        "options": [
+          [
+            "pepperoni",
+            0.5
+          ],
+          [
+            "mushroom",
+            0.2
+          ],
+          [
+            "basil",
+            0.12
+          ],
+          [
+            "pineapple",
+            0.1
+          ],
+          [
+            "anchovies",
+            0.06
+          ],
+          [
+            "a rocket",
+            0.02
+          ]
+        ]
+      }
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "You want a contract summary that is steady and repeatable. Which temperature?",
+      "options": [
+        "It makes no difference",
+        "Low, near 0.2",
+        "High, near 1.8"
+      ],
+      "answer": 1,
+      "why": "Low temperature lets the top choice win almost every time, so the same input gives nearly the same output."
+    },
+    {
+      "id": "c5",
+      "type": "spot",
+      "q": "One sentence in this AI answer is invented. Tap it.",
+      "sentences": [
+        "Photosynthesis turns light, water and carbon dioxide into sugar and oxygen.",
+        "It happens mostly in the chloroplasts of leaf cells.",
+        "A 2017 Harvard study by Dr. Elena Marsh proved plants can photosynthesize in total darkness."
+      ],
+      "answer": 2,
+      "why": "A name, a year and an institution make it sound solid, but nothing here can be verified, and it contradicts how photosynthesis works. Hallucinations often arrive as confident specifics."
+    },
+    {
+      "id": "c6",
+      "type": "order",
+      "q": "Put the steps in order",
+      "steps": [
+        "Your prompt is split into tokens",
+        "The model scores every possible next token",
+        "One token is picked, guided by temperature",
+        "The token is added and the loop repeats"
+      ],
+      "why": "Split, score, pick, repeat. Each new token becomes part of the input for the next one."
+    }
+  ]
+}
