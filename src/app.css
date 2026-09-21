@@ -36,7 +36,38 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;margin:0}
 
 #shell{position:relative;height:100%;max-width:440px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
-@media (min-width:480px){#shell{box-shadow:0 0 0 1px var(--line),0 24px 60px rgba(34,32,74,.2)}}
+@media (min-width:480px) and (max-width:859px){#shell{box-shadow:0 0 0 1px var(--line),0 24px 60px rgba(34,32,74,.2)}}
+
+/* desktop / wide browser layout: sidebar nav + centered content column, instead of a phone card */
+@media (min-width:860px){
+  html,body{background:var(--page)}
+  #shell{
+    max-width:1180px;height:100vh;margin:0 auto;overflow:visible;
+    display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:auto 1fr;
+    grid-template-areas:"top top" "nav main";
+    box-shadow:none;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--bg);
+  }
+  .top{grid-area:top;padding:10px 28px}
+  .brand{font-size:28px}
+  .main{grid-area:main;padding:32px 40px 60px;justify-self:stretch}
+  .main>*{max-width:640px;margin-left:auto;margin-right:auto}
+  .main .trk,.main .unit,.main .unit-mini,.main .path,.main .soon,.main .ph,.main .sub,.main .card,.main .tiles,.main .seg,.main .plan,.main .foot{max-width:640px}
+  .nav{
+    grid-area:nav;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:4px;
+    border-top:0;border-right:2px solid var(--line);padding:18px 14px;background:var(--surface)
+  }
+  .nav button{flex-direction:row;justify-content:flex-start;gap:12px;padding:0 14px;min-height:52px;border-radius:14px;font-size:16px}
+  .nav .ico{width:26px;height:26px}
+  .nav button:hover{background:var(--brand-soft)}
+  .nav button[aria-current="page"]{background:var(--brand-soft)}
+  .l-body>*,.l-foot>*{max-width:640px;margin-left:auto;margin-right:auto}
+  .l-body{padding:24px 40px 32px}
+  .l-top{padding:16px 40px 10px;display:grid;grid-template-columns:40px minmax(0,640px) 60px;justify-content:center;column-gap:16px}
+  .l-top>.bar{margin:0}
+  .l-foot{padding:18px 40px 22px}
+  .scrim{align-items:center;justify-content:center}
+  .sheet{max-width:420px;border-radius:24px}
+}
 
 /* top bar */
 .top{display:flex;align-items:center;justify-content:space-between;padding:6px 10px 6px 16px;background:var(--surface);border-bottom:2px solid var(--line);flex:none}
