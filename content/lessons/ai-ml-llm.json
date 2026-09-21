@@ -1,0 +1,71 @@
+{
+  "id": "ai-ml-llm",
+  "title": "AI, ML and LLMs",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "Picture three circles, one inside the next. **AI** is the big idea. **Machine learning (ML)** is AI that learns from data. **LLMs** are ML models trained on huge amounts of text."
+    },
+    {
+      "id": "c2",
+      "type": "order",
+      "q": "Order them from broadest to narrowest",
+      "steps": [
+        "Artificial intelligence",
+        "Machine learning",
+        "Large language models"
+      ],
+      "why": "AI is the whole field, ML is one way to build it, and LLMs are one kind of ML model."
+    },
+    {
+      "id": "c3",
+      "type": "mc",
+      "q": "What does \"large\" in large language model mostly refer to?",
+      "options": [
+        "The size of the screen it runs on",
+        "How long its answers are",
+        "The size of the model and the amount of text it learned from",
+        "How many languages it speaks"
+      ],
+      "answer": 2,
+      "why": "Large means scale: a huge number of adjustable values (parameters) and a huge amount of training text."
+    },
+    {
+      "id": "c4",
+      "type": "match",
+      "q": "Match the term to its meaning",
+      "pairs": [
+        [
+          "Model",
+          "The trained program that makes predictions"
+        ],
+        [
+          "Training",
+          "Adjusting the model using many examples"
+        ],
+        [
+          "Prompt",
+          "The input you give the model"
+        ],
+        [
+          "Parameter",
+          "One adjustable number inside the model"
+        ]
+      ],
+      "why": "You train a model on data, then prompt it to get predictions."
+    },
+    {
+      "id": "c5",
+      "type": "spot",
+      "q": "One statement is wrong. Tap it.",
+      "sentences": [
+        "Machine learning is one way to build AI.",
+        "An LLM is a kind of machine learning model.",
+        "Every AI system is an LLM."
+      ],
+      "answer": 2,
+      "why": "LLMs are one type of AI. Image recognizers, recommendation engines and many other systems are AI too, and most are not LLMs."
+    }
+  ]
+}

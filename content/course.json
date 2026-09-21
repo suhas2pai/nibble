@@ -1,0 +1,54 @@
+{
+  "tracks": [
+    {
+      "id": "foundations",
+      "title": "Foundations",
+      "units": [
+        {
+          "id": "ai-basics",
+          "title": "AI basics",
+          "blurb": "What AI is, and what it isn't",
+          "color": "brand",
+          "tier": "free",
+          "lessons": [
+            "what-is-ai",
+            "ai-ml-llm",
+            "what-ai-cant-do"
+          ]
+        },
+        {
+          "id": "how-llms-work",
+          "title": "How LLMs work",
+          "blurb": "Tokens, temperature, context, and why models make things up",
+          "color": "mint",
+          "tier": "free",
+          "lessons": [
+            "how-an-llm-answers",
+            "context-windows",
+            "why-models-make-things-up"
+          ]
+        },
+        {
+          "id": "prompting",
+          "title": "Prompting",
+          "blurb": "Write prompts that get better answers",
+          "color": "coral",
+          "tier": "pro",
+          "lessons": [
+            "prompt-basics"
+          ]
+        },
+        {
+          "id": "agents",
+          "title": "Agents and tools",
+          "blurb": "Let models take actions, safely",
+          "color": "sun",
+          "tier": "pro",
+          "lessons": [
+            "what-is-an-agent"
+          ]
+        }
+      ]
+    }
+  ]
+}

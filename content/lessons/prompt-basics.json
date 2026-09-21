@@ -1,0 +1,89 @@
+{
+  "id": "prompt-basics",
+  "title": "Better prompts",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "A strong prompt tells the model **what to do, for whom, and what a good result looks like**.",
+      "points": [
+        "Task: what to do",
+        "Context: what it can't guess",
+        "Format: how the answer should look"
+      ]
+    },
+    {
+      "id": "c2",
+      "type": "mc",
+      "q": "Which prompt is most likely to get a useful answer?",
+      "options": [
+        "Make it good.",
+        "Write about our product.",
+        "Write a friendly 3-sentence blurb on our app for IT managers, with a call to action."
+      ],
+      "answer": 2,
+      "why": "It names the task, audience, length, tone and ending, so the model has far less to guess."
+    },
+    {
+      "id": "c3",
+      "type": "match",
+      "q": "Match each prompt part to its job",
+      "pairs": [
+        [
+          "Role",
+          "Sets the point of view, like an editor"
+        ],
+        [
+          "Task",
+          "Says exactly what to do"
+        ],
+        [
+          "Context",
+          "Adds background the model can't guess"
+        ],
+        [
+          "Format",
+          "Says how the answer should look"
+        ]
+      ],
+      "why": "You don't need all four every time, but each one removes guesswork."
+    },
+    {
+      "id": "c4",
+      "type": "fill",
+      "before": "Giving one or two examples of what you want is called",
+      "after": "prompting.",
+      "options": [
+        "few-shot",
+        "fast-shot",
+        "free-shot"
+      ],
+      "answer": 0,
+      "why": "Few-shot prompting shows the model examples of the pattern to follow."
+    },
+    {
+      "id": "c5",
+      "type": "spot",
+      "q": "Tap the habit that usually hurts results.",
+      "sentences": [
+        "Say who the answer is for.",
+        "Pack five unrelated tasks into one message.",
+        "Say what to avoid."
+      ],
+      "answer": 1,
+      "why": "One clear task per prompt is easier to follow. Split big jobs into steps."
+    },
+    {
+      "id": "c6",
+      "type": "order",
+      "q": "Improve a weak answer, in order",
+      "steps": [
+        "Read what the model got wrong",
+        "Add the missing context to your prompt",
+        "Run it again",
+        "Keep the better version"
+      ],
+      "why": "Prompting is iterative: change one thing, compare, and keep what works."
+    }
+  ]
+}

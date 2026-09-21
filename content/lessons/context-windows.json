@@ -1,0 +1,67 @@
+{
+  "id": "context-windows",
+  "title": "Context windows",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "A **context window** is how much text the model can consider at once: your prompt, the chat so far, and its reply so far. Text outside the window is invisible to it."
+    },
+    {
+      "id": "c2",
+      "type": "mc",
+      "q": "A long chat goes on and the assistant forgets a detail from the start. What's the likely cause?",
+      "options": [
+        "The early text no longer fits in the context window",
+        "The model got tired",
+        "The model chose to ignore you"
+      ],
+      "answer": 0,
+      "why": "The model can only work with what fits in its window. Very long chats may push early messages out or get summarized, so details can be lost."
+    },
+    {
+      "id": "c3",
+      "type": "mc",
+      "q": "Which of these usually counts toward the context window?",
+      "options": [
+        "Only your latest question",
+        "Your prompt and the reply so far",
+        "Only the model's reply"
+      ],
+      "answer": 1,
+      "why": "The window holds both the input and the output, measured in tokens."
+    },
+    {
+      "id": "c4",
+      "type": "spot",
+      "q": "One tip is bad advice. Tap it.",
+      "sentences": [
+        "Put your key instruction clearly, and repeat it near the end.",
+        "Give only the sections of a document that matter.",
+        "Paste 500 pages and expect every detail to get equal attention."
+      ],
+      "answer": 2,
+      "why": "Models can miss details in very long inputs. Short, focused context usually gives better answers."
+    },
+    {
+      "id": "c5",
+      "type": "match",
+      "q": "Match each problem to a fix",
+      "pairs": [
+        [
+          "The chat has grown very long",
+          "Start fresh with a short summary"
+        ],
+        [
+          "You need answers from a huge report",
+          "Share only the relevant sections"
+        ],
+        [
+          "The model keeps ignoring a rule",
+          "Restate the rule clearly near the end"
+        ]
+      ],
+      "why": "Every fix comes down to giving the model less, and more relevant, text."
+    }
+  ]
+}
