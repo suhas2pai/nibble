@@ -116,6 +116,7 @@ const ic = {
   star: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`,
   x: (s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
   home: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg>`,
+  house: (s = 40) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/><path d="M10 20v-4h4v4" fill="var(--surface)"/></svg>`,
   loop: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M20.5 3.5v5.5H15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   gem: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z" fill="currentColor"/></svg>`,
   user: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21a8 8 0 0 1 16 0" fill="currentColor"/></svg>`
@@ -331,7 +332,7 @@ function homeHTML() {
       h += all ? header('button', `class="${cls}" data-act="toggleUnit" data-u="${esc(u.id)}"`) : header('div', `class="${cls}"`);
       h += '<div class="path">' + u.lessons.map((id, i) => {
         const les = LES[id], s = st[id], dx = Math.round(Math.sin(i * 1.2) * 46);
-        const icon = s === 'done' ? ic.check(30) : s === 'current' ? ic.star(40) : ic.lock(28);
+        const icon = ic.house(40);
         const label = s === 'done' ? 'completed' : s === 'current' ? 'start' : 'locked';
         const bub = s === 'current' ? `<div class="bubble">${doneN === 0 && ui === 0 ? 'Start' : 'Up next'}</div>` : '';
         return `<div class="step ${s}" style="--dx:${dx}px">${bub}<button class="node ${s}" data-act="node" data-id="${esc(id)}" aria-label="${esc(les.title)}, ${label}">${icon}</button><div class="lbl">${esc(les.title)}</div></div>`;

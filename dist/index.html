@@ -113,15 +113,16 @@ h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;margin:0}
 .unit.pro{width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);color:var(--ink);border:2px solid var(--line);box-shadow:0 5px 0 var(--line);margin-bottom:22px}
 .unit.pro p{color:var(--ink2)}
 .tag{display:inline-flex;align-items:center;gap:5px;background:var(--sun);color:var(--ink);font:700 14px 'Fredoka',sans-serif;border-radius:99px;padding:5px 11px;flex:none}
-.path{display:flex;flex-direction:column;align-items:center;gap:20px;margin:0 0 30px}
-.step{position:relative;display:flex;flex-direction:column;align-items:center;gap:9px;translate:var(--dx,0px) 0}
-.step.current{margin-top:34px}
-.node{width:76px;height:76px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--c);box-shadow:0 6px 0 var(--cd);color:var(--ink);transition:translate .08s,box-shadow .08s}
+.path{display:flex;flex-direction:row;align-items:flex-start;gap:24px;overflow-x:auto;margin:0 0 30px;padding:22px 24px 30px;border:2px solid var(--line);border-radius:22px;background:linear-gradient(180deg,var(--surface),var(--bg));box-shadow:inset 0 -12px 0 var(--mint-soft);scroll-snap-type:x proximity}
+.step{position:relative;display:flex;flex:0 0 132px;flex-direction:column;align-items:center;gap:9px;translate:0 0;scroll-snap-align:center}
+.step:not(:last-child)::after{content:"";position:absolute;z-index:0;top:38px;left:calc(50% + 38px);width:80px;height:7px;border-radius:99px;background:var(--mint);box-shadow:0 3px 0 var(--mint-d)}
+.step.current{margin-top:0}
+.node{position:relative;z-index:1;width:76px;height:76px;border-radius:22px 22px 16px 16px;border:0;display:grid;place-items:center;background:var(--c);box-shadow:0 6px 0 var(--cd);color:var(--ink);transition:translate .08s,box-shadow .08s}
 .node:active{translate:0 4px;box-shadow:0 2px 0 var(--cd)}
 .node.done{--c:var(--mint);--cd:var(--mint-d)}
-.node.current{--c:var(--sun);--cd:var(--sun-d);width:88px;height:88px}
+.node.current{--c:var(--sun);--cd:var(--sun-d);width:88px;height:88px;border-radius:25px 25px 18px 18px;filter:drop-shadow(0 0 10px rgba(255,201,60,.42))}
 .node.locked{--c:var(--lock);--cd:var(--lock-d);color:var(--ink2)}
-.lbl{font:600 15px 'Fredoka',sans-serif;color:var(--ink2);max-width:160px;text-align:center}
+.lbl{font:600 15px 'Fredoka',sans-serif;color:var(--ink2);max-width:132px;text-align:center;min-height:42px}
 .step.current .lbl{color:var(--ink)}
 .bubble{position:absolute;top:-38px;left:50%;translate:-50% 0;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:3px 14px;font:700 15px 'Fredoka',sans-serif;color:var(--brand-text);animation:bob 1.6s ease-in-out infinite}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-8px;width:12px;height:12px;background:var(--surface);border-right:2px solid var(--line);border-bottom:2px solid var(--line);transform:translateX(-50%) rotate(45deg)}
@@ -393,6 +394,7 @@ const ic = {
   star: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`,
   x: (s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
   home: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg>`,
+  house: (s = 40) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/><path d="M10 20v-4h4v4" fill="var(--surface)"/></svg>`,
   loop: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M20.5 3.5v5.5H15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   gem: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z" fill="currentColor"/></svg>`,
   user: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21a8 8 0 0 1 16 0" fill="currentColor"/></svg>`
@@ -608,7 +610,7 @@ function homeHTML() {
       h += all ? header('button', `class="${cls}" data-act="toggleUnit" data-u="${esc(u.id)}"`) : header('div', `class="${cls}"`);
       h += '<div class="path">' + u.lessons.map((id, i) => {
         const les = LES[id], s = st[id], dx = Math.round(Math.sin(i * 1.2) * 46);
-        const icon = s === 'done' ? ic.check(30) : s === 'current' ? ic.star(40) : ic.lock(28);
+        const icon = ic.house(40);
         const label = s === 'done' ? 'completed' : s === 'current' ? 'start' : 'locked';
         const bub = s === 'current' ? `<div class="bubble">${doneN === 0 && ui === 0 ? 'Start' : 'Up next'}</div>` : '';
         return `<div class="step ${s}" style="--dx:${dx}px">${bub}<button class="node ${s}" data-act="node" data-id="${esc(id)}" aria-label="${esc(les.title)}, ${label}">${icon}</button><div class="lbl">${esc(les.title)}</div></div>`;
