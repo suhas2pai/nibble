@@ -32,7 +32,7 @@ const store = {
   set(k, v) { mem[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
 };
 const now = () => Date.now();
-const fresh = () => ({ xp: 0, streak: 0, lastDay: null, hearts: CFG.hearts.max, heartsAt: now(), done: {}, missed: [], review: {}, bookmarks: [], feedback: {}, reminder: null, settings: { largeText: false, reducedMotion: false, relaxed: false }, pro: false });
+const fresh = () => ({ xp: 0, streak: 0, lastDay: null, hearts: CFG.hearts.max, heartsAt: now(), done: {}, missed: [], review: {}, bookmarks: [], feedback: {}, reminder: null, settings: { largeText: false, reducedMotion: false, relaxed: false }, challenge: {}, referrals: { code: '', invites: 0, reward: false }, league: { name: 'My Nibble Circle', members: [] }, certificates: [], customChallenges: [], analytics: {}, pro: false });
 function save() {
   if (!ACCOUNT) { store.set(KEY, P); return; }
   const all = store.get(ACCOUNTS_KEY) || {};
@@ -104,6 +104,10 @@ function dueReview() {
 function scheduleReview(id, days) {
   const d = new Date(); d.setDate(d.getDate() + days);
   P.review[id] = dayKey(d);
+}
+function trackEvent(name, data) {
+  P.analytics[name] = (P.analytics[name] || 0) + 1;
+  if (data) P.analytics.last = { name, data, at: now() };
 }
 
 /* ---------- icons + mascot ---------- */
@@ -276,7 +280,7 @@ function complete() {
     const prev = P.done[L.id] || { n: 0, best: 0 };
     P.done[L.id] = { n: prev.n + 1, best: Math.max(prev.best, L.acc) };
   }
-  P.xp += xp; L.xp = xp; touchStreak(); save();
+  P.xp += xp; L.xp = xp; touchStreak(); trackEvent('lesson_complete', L.id); save();
   L.fin = true; L.done = L.total; L.conf = confetti();
 }
 function advance() {
@@ -303,7 +307,7 @@ function topHTML() {
   </div>`;
 }
 function navHTML() {
-  const t = [['learn', 'Learn', ic.home()], ['dashboard', 'Progress', ic.star(24)], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()], ['account', 'Account', ic.user()]];
+  const t = [['learn', 'Learn', ic.home()], ['dashboard', 'Progress', ic.star(24)], ['community', 'Community', ic.gem()], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()], ['account', 'Account', ic.user()]];
   return t.map((x) => `<button data-tab="${x[0]}" ${S.tab === x[0] ? 'aria-current="page"' : ''}><span class="ico">${x[2]}${x[0] === 'practice' && P.missed.length ? `<span class="dot" aria-label="${P.missed.length} to review">${P.missed.length}</span>` : ''}</span>${x[1]}</button>`).join('');
 }
 function homeHTML() {
@@ -382,6 +386,11 @@ function accountHTML() {
     <section class="account-page"><h2>Daily reminder</h2><p class="fine">Browser reminders work on this device only.</p><form id="reminder-form" class="account-form"><label for="reminder-time">Reminder time</label><input id="reminder-time" name="time" type="time" value="${esc(P.reminder || '')}"><button class="btn sun" type="submit">${P.reminder ? 'Update reminder' : 'Enable reminder'}</button></form></section>
     <section class="account-page"><h2>Change password</h2><p class="fine">Use your current password to choose a new one.</p><form id="password-form" class="account-form"><label for="current-password">Current password</label><input id="current-password" name="current" type="password" autocomplete="current-password" minlength="8" required><label for="new-password">New password</label><input id="new-password" name="next" type="password" autocomplete="new-password" minlength="8" required><button class="btn mint" type="submit">Change password</button></form></section>
     <button class="btn coral" data-act="signout">Sign out</button>`;
+}
+function communityHTML() {
+  const code = P.referrals.code || (P.referrals.code = (ACCOUNT.firstName || 'nibble').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) + Math.floor(100 + Math.random() * 900));
+  const today = dayKey(), challengeDone = P.challenge.date === today;
+  return `<h1 class="ph">Community</h1><p class="sub">Learn together, share progress, and keep the momentum going.</p><section class="feature-hero"><span class="eyebrow">Daily challenge</span><h2>Spot the risky AI habit</h2><p>Which habit is most likely to cause trouble in a real workflow?</p><button class="btn ${challengeDone ? 'ghost' : 'brand'}" data-act="dailyChallenge" ${challengeDone ? 'disabled' : ''}>${challengeDone ? 'Completed today' : 'Take today\'s challenge'}</button></section><section class="card community-card"><h2>Choose your path</h2><p>Tell Nibble what you want to do with AI.</p><div class="path-options">${['Lead AI work', 'Write better prompts', 'Build with agents'].map((x) => `<button class="path-choice ${P.analytics.path === x ? 'selected' : ''}" data-act="choosePath" data-v="${esc(x)}">${x}</button>`).join('')}</div><p class="fine">${P.analytics.path ? `Your route: ${esc(P.analytics.path)}` : 'Choose a route to personalize your map.'}</p></section><section class="card community-card"><h2>Prompt practice lab</h2><p>Turn a vague request into a useful prompt.</p><textarea class="practice-input" id="sandbox-prompt" rows="3" placeholder="Make a good report"></textarea><button class="btn mint" data-act="improvePrompt">Improve my prompt</button>${P.analytics.last && P.analytics.last.name === 'prompt_improved' ? `<p class="sandbox-result">Try: ${esc(P.analytics.last.data)}</p>` : ''}</section><section class="card community-card"><h2>Create a challenge</h2><p>Draft a card to share with your learning circle.</p><input class="field" id="custom-challenge" placeholder="Write a question about AI"><button class="btn brand" data-act="saveChallenge">Save challenge draft</button><p class="fine">${P.customChallenges.length} draft${P.customChallenges.length === 1 ? '' : 's'} saved</p></section><section class="card community-card"><h2>Invite your circle</h2><p>Share your code and earn a bonus when a friend joins.</p><div class="invite-code">${esc(code)}</div><button class="btn sun" data-act="copyReferral">Copy invite code</button><p class="fine">${P.referrals.invites} invite${P.referrals.invites === 1 ? '' : 's'} recorded</p></section><section class="card community-card"><h2>${esc(P.league.name)}</h2><p>Small weekly leagues keep learning friendly and focused.</p><div class="league-row"><b>You</b><span>${P.xp} XP</span></div>${P.league.members.map((m) => `<div class="league-row"><b>${esc(m.name)}</b><span>${m.xp} XP</span></div>`).join('')}<button class="btn mint" data-act="addLeagueMember">Add sample teammate</button></section><section class="card community-card"><h2>Team learning preview</h2><p>See how a team could track learning together.</p><div class="league-row"><b>Team completion</b><span>${Math.min(100, Math.round((Object.keys(P.done).length / flat().length) * 100))}%</span></div><div class="league-row"><b>Most practiced</b><span>${P.analytics.path || 'AI basics'}</span></div></section><section class="card community-card"><h2>Your certificates</h2><p>${P.certificates.length ? P.certificates.join(' · ') : 'Complete a track to earn a shareable certificate.'}</p><button class="btn ghost" data-act="certificate">Preview certificate</button></section>`;
 }
 function landingHTML() {
   return `<main class="landing"><div class="landing-mark">${mascot(72, 'cheer')}<span>${esc(CFG.name.toLowerCase())}</span></div><p class="eyebrow">AI in bite-size lessons</p><h1>Build better AI instincts, one small lesson at a time.</h1><p class="landing-copy">Learn how AI works, write stronger prompts, and make safer decisions with short, practical lessons that fit into your day.</p><div class="landing-points"><div><b>15</b><span>guided lessons</span></div><div><b>3 min</b><span>per lesson</span></div><div><b>100%</b><span>self-paced</span></div></div><div class="stack"><button class="btn brand" data-act="startSignup">Create free account</button><button class="btn ghost" data-act="startSignin">Sign in</button></div><p class="landing-note">Your progress is saved to your account. This prototype stores accounts in this browser.</p></main>`;
@@ -494,7 +503,7 @@ function render() {
   const ms = m0 ? m0.scrollTop : 0, ls = l0 ? l0.scrollTop : 0;
   const lock = S.lesson || S.modal;
   if (!ACCOUNT) { shell.innerHTML = landingHTML() + (S.modal ? modalHTML() : ''); applySettings(); if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); } return; }
-  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : S.tab === 'dashboard' ? dashboardHTML() : accountHTML();
+  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : S.tab === 'dashboard' ? dashboardHTML() : S.tab === 'community' ? communityHTML() : accountHTML();
   shell.innerHTML = `<header class="top" ${lock ? 'inert' : ''}>${topHTML()}</header><main class="main" ${lock ? 'inert' : ''}>${view}</main><nav class="nav" aria-label="Main" ${lock ? 'inert' : ''}>${navHTML()}</nav>${S.lesson && L ? lessonHTML() : ''}${S.modal ? modalHTML() : ''}`;
   const m1 = shell.querySelector('.main'), l1 = shell.querySelector('.l-body');
   if (!S.rs) { if (m1) m1.scrollTop = ms; if (l1) l1.scrollTop = ls; }
@@ -566,11 +575,18 @@ const A = {
   },
   clearSearch() { S.search = ''; render(); },
   goPractice() { S.tab = 'practice'; S.rs = true; render(); },
+  dailyChallenge() { P.challenge = { date: dayKey(), score: 1 }; P.xp += 10; trackEvent('daily_challenge_complete'); save(); toast('Challenge complete. +10 XP.'); render(); },
+  choosePath(b) { P.analytics.path = b.dataset.v; trackEvent('path_selected', b.dataset.v); save(); render(); },
+  improvePrompt() { const input = $('#sandbox-prompt'); if (!input || !input.value.trim()) { toast('Write a rough request first.'); return; } const improved = `Write a concise answer for a beginner. Task: ${input.value.trim()}. Include one example and state any uncertainty.`; trackEvent('prompt_improved', improved); save(); render(); },
+  saveChallenge() { const input = $('#custom-challenge'); if (!input || !input.value.trim()) { toast('Write a challenge first.'); return; } P.customChallenges.push(input.value.trim()); trackEvent('challenge_drafted'); save(); render(); toast('Challenge draft saved.'); },
+  copyReferral() { const code = P.referrals.code; if (navigator.clipboard) navigator.clipboard.writeText(`Join me on Nibble with invite code ${code}`).then(() => toast('Invite copied.')); else toast(`Invite code: ${code}`); },
+  addLeagueMember() { if (P.league.members.length < 3) P.league.members.push({ name: ['Maya', 'Jon', 'Priya'][P.league.members.length], xp: [180, 120, 75][P.league.members.length] }); save(); render(); },
+  certificate() { S.modal = { title: 'Certificate preview', body: `${ACCOUNT.firstName || 'Learner'} has completed ${Object.keys(P.done).length} Nibble lessons and earned ${P.xp} XP. Shareable certificates will use verified completion once accounts are server-backed.`, actions: [{ label: 'Close', act: 'close', cls: 'brand' }] }; render(); },
   async shareProgress() {
     const name = ACCOUNT && ACCOUNT.firstName ? ACCOUNT.firstName : 'I';
     const text = `${name} has completed ${Object.keys(P.done).length} Nibble lessons and earned ${P.xp} XP.`;
     try {
-      if (navigator.share) await navigator.share({ title: 'My Nibble progress', text });
+      if (navigator.share) { trackEvent('progress_shared'); await navigator.share({ title: 'My Nibble progress', text }); }
       else if (navigator.clipboard) { await navigator.clipboard.writeText(text); toast('Progress summary copied.'); }
       else toast(text);
     } catch (e) { /* sharing can be cancelled */ }

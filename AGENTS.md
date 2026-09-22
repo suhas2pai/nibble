@@ -8,6 +8,7 @@
 - Account sign-up/sign-in and progress profiles are currently browser-local in `src/engine.js`; there is no server authentication or cross-device sync.
 - Password recovery is a local prototype reset, not verified email recovery. Production recovery and password changes need server-side identity checks, sessions, and audit controls.
 - Learner settings, bookmarks, review dates, feedback, reminders, and accessibility preferences are also browser-local progress data.
+- Community growth features currently use browser-local demo data: daily challenges, invite codes, leagues, certificates, custom challenge drafts, team previews, and analytics counters are not yet shared or server-verified.
 - The development app fetches JSON from `content/`. `npm run build` embeds the source, content, CSS, and JavaScript into `dist/index.html`.
 - Read [README.md](README.md) for workflow and architecture, and [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) for lesson schemas and writing rules.
 
