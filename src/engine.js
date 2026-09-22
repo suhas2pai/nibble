@@ -379,15 +379,20 @@ function accountHTML() {
     <section class="account-page"><p class="account-email">${esc(ACCOUNT.email)}</p><form id="profile-form" class="account-form"><label for="profile-first">First name</label><input id="profile-first" name="firstName" type="text" autocomplete="given-name" maxlength="40" required value="${esc(ACCOUNT.firstName || '')}"><label for="profile-last">Last name</label><input id="profile-last" name="lastName" type="text" autocomplete="family-name" maxlength="40" required value="${esc(ACCOUNT.lastName || '')}"><button class="btn brand" type="submit">Save profile</button></form><p class="fine">Your progress is saved in this browser for this account. Cross-device sync needs a connected server.</p></section>
     <section class="account-page"><h2>Learning preferences</h2><form id="settings-form" class="settings-form"><label><input type="checkbox" name="largeText" ${settings().largeText ? 'checked' : ''}> Larger text</label><label><input type="checkbox" name="reducedMotion" ${settings().reducedMotion ? 'checked' : ''}> Reduce motion</label><label><input type="checkbox" name="relaxed" ${settings().relaxed ? 'checked' : ''}> Relaxed mode (no hearts)</label><button class="btn mint" type="submit">Save preferences</button></form></section>
     <section class="account-page"><h2>Daily reminder</h2><p class="fine">Browser reminders work on this device only.</p><form id="reminder-form" class="account-form"><label for="reminder-time">Reminder time</label><input id="reminder-time" name="time" type="time" value="${esc(P.reminder || '')}"><button class="btn sun" type="submit">${P.reminder ? 'Update reminder' : 'Enable reminder'}</button></form></section>
+    <section class="account-page"><h2>Change password</h2><p class="fine">Use your current password to choose a new one.</p><form id="password-form" class="account-form"><label for="current-password">Current password</label><input id="current-password" name="current" type="password" autocomplete="current-password" minlength="8" required><label for="new-password">New password</label><input id="new-password" name="next" type="password" autocomplete="new-password" minlength="8" required><button class="btn mint" type="submit">Change password</button></form></section>
     <button class="btn coral" data-act="signout">Sign out</button>`;
+}
+function landingHTML() {
+  return `<main class="landing"><div class="landing-mark">${mascot(72, 'cheer')}<span>${esc(CFG.name.toLowerCase())}</span></div><p class="eyebrow">AI in bite-size lessons</p><h1>Build better AI instincts, one small lesson at a time.</h1><p class="landing-copy">Learn how AI works, write stronger prompts, and make safer decisions with short, practical lessons that fit into your day.</p><div class="landing-points"><div><b>15</b><span>guided lessons</span></div><div><b>3 min</b><span>per lesson</span></div><div><b>100%</b><span>self-paced</span></div></div><div class="stack"><button class="btn brand" data-act="startSignup">Create free account</button><button class="btn ghost" data-act="startSignin">Sign in</button></div><p class="landing-note">Your progress is saved to your account. This prototype stores accounts in this browser.</p></main>`;
 }
 function modalHTML() {
   const m = S.modal;
   if (m.kind === 'auth') {
     const signup = m.mode === 'signup';
-    return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${signup ? 'Create your account' : 'Welcome back'}</h2><p>${signup ? 'Save your Nibble progress to this browser with an email and password.' : 'Sign in to continue your saved lessons.'}</p>
+    const recovery = m.mode === 'recovery';
+    return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${recovery ? 'Recover your password' : signup ? 'Create your account' : 'Welcome back'}</h2><p>${recovery ? 'This prototype resets the local password for an existing email. Production recovery needs a verified email link.' : signup ? 'Save your Nibble progress to this browser with an email and password.' : 'Sign in to continue your saved lessons.'}</p>
       <form id="auth-form" class="account-form"><label for="auth-email">Email</label><input id="auth-email" name="email" type="email" autocomplete="email" required value="${esc(m.email || '')}"><label for="auth-password">Password</label><input id="auth-password" name="password" type="password" autocomplete="${signup ? 'new-password' : 'current-password'}" minlength="8" required><button class="btn brand" type="submit">${signup ? 'Create account' : 'Sign in'}</button></form>
-      ${m.error ? `<p class="auth-error" role="alert">${esc(m.error)}</p>` : ''}<button class="btn ghost" data-act="authToggle">${signup ? 'Already have an account? Sign in' : 'New here? Create an account'}</button><button class="btn ghost" data-act="close">Cancel</button></div></div>`;
+      ${m.error ? `<p class="auth-error" role="alert">${esc(m.error)}</p>` : ''}<button class="btn ghost" data-act="authToggle">${recovery ? 'Back to sign in' : signup ? 'Already have an account? Sign in' : 'New here? Create an account'}</button>${!signup && !recovery ? '<button class="btn ghost" data-act="authRecover">Forgot your password?</button>' : ''}<button class="btn ghost" data-act="close">Cancel</button></div></div>`;
   }
   return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${esc(m.title)}</h2><p>${esc(m.body)}</p><div class="stack">${m.actions.map((a) => `<button class="btn ${a.cls}" data-act="${a.act}">${esc(a.label)}</button>`).join('')}</div></div></div>`;
 }
@@ -487,6 +492,7 @@ function render() {
   const m0 = shell.querySelector('.main'), l0 = shell.querySelector('.l-body');
   const ms = m0 ? m0.scrollTop : 0, ls = l0 ? l0.scrollTop : 0;
   const lock = S.lesson || S.modal;
+  if (!ACCOUNT) { shell.innerHTML = landingHTML() + (S.modal ? modalHTML() : ''); applySettings(); if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); } return; }
   const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : S.tab === 'dashboard' ? dashboardHTML() : accountHTML();
   shell.innerHTML = `<header class="top" ${lock ? 'inert' : ''}>${topHTML()}</header><main class="main" ${lock ? 'inert' : ''}>${view}</main><nav class="nav" aria-label="Main" ${lock ? 'inert' : ''}>${navHTML()}</nav>${S.lesson && L ? lessonHTML() : ''}${S.modal ? modalHTML() : ''}`;
   const m1 = shell.querySelector('.main'), l1 = shell.querySelector('.l-body');
@@ -504,13 +510,21 @@ function toast(msg) {
 
 /* ---------- actions ---------- */
 const A = {
+  startSignup() { S.modal = { kind: 'auth', mode: 'signup', email: '', error: '' }; render(); },
+  startSignin() { S.modal = { kind: 'auth', mode: 'signin', email: '', error: '' }; render(); },
   account() { if (!ACCOUNT) { S.modal = { kind: 'auth', mode: 'signin', email: '', error: '' }; render(); return; } S.tab = 'account'; S.rs = true; render(); },
-  authToggle() { S.modal.mode = S.modal.mode === 'signup' ? 'signin' : 'signup'; S.modal.error = ''; render(); },
+  authToggle() { S.modal.mode = S.modal.mode === 'recovery' ? 'signin' : S.modal.mode === 'signup' ? 'signin' : 'signup'; S.modal.error = ''; render(); },
+  authRecover() { S.modal.mode = 'recovery'; S.modal.error = ''; render(); },
   async authSubmit(form) {
     const email = emailKey(form.email.value), password = form.password.value;
     S.modal.email = email;
     if (!email || password.length < 8) { S.modal.error = 'Use a valid email and a password with at least 8 characters.'; render(); return; }
     const all = store.get(ACCOUNTS_KEY) || {}, existing = all[email], hash = await passwordHash(password);
+    if (S.modal.mode === 'recovery') {
+      if (!existing) { S.modal.error = 'No local account exists for that email.'; render(); return; }
+      existing.passwordHash = hash; all[email] = existing; store.set(ACCOUNTS_KEY, all);
+      S.modal = { kind: 'auth', mode: 'signin', email, error: '' }; render(); toast('Password reset. Sign in with your new password.'); return;
+    }
     if (S.modal.mode === 'signup') {
       if (existing) { S.modal.error = 'An account with this email already exists. Sign in instead.'; render(); return; }
       ACCOUNT = { email, passwordHash: hash, createdAt: new Date().toISOString(), progress: P };
@@ -536,6 +550,13 @@ const A = {
     if (!form.time.value) { P.reminder = null; save(); render(); toast('Reminder disabled.'); return; }
     if ('Notification' in window && Notification.permission === 'default') await Notification.requestPermission();
     P.reminder = form.time.value; save(); render(); toast('Daily reminder saved on this device.');
+  },
+  async passwordSubmit(form) {
+    const current = await passwordHash(form.current.value), next = form.next.value;
+    const all = store.get(ACCOUNTS_KEY) || {}, record = all[ACCOUNT.email];
+    if (next.length < 8) { toast('Use at least 8 characters for the new password.'); return; }
+    if (!record || record.passwordHash !== current) { toast('Your current password is not correct.'); return; }
+    ACCOUNT = { ...ACCOUNT, passwordHash: await passwordHash(next) }; save(); form.reset(); toast('Password changed.');
   },
   bookmark(b) {
     const id = b.dataset.id, i = P.bookmarks.indexOf(id);
@@ -621,6 +642,7 @@ document.addEventListener('submit', (e) => {
   if (e.target.id === 'profile-form') { e.preventDefault(); A.profileSubmit(e.target); return; }
   if (e.target.id === 'settings-form') { e.preventDefault(); A.settingsSubmit(e.target); return; }
   if (e.target.id === 'reminder-form') { e.preventDefault(); A.reminderSubmit(e.target); return; }
+  if (e.target.id === 'password-form') { e.preventDefault(); A.passwordSubmit(e.target); return; }
   if (e.target.id !== 'auth-form') return;
   e.preventDefault();
   A.authSubmit(e.target);
