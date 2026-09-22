@@ -13,5 +13,6 @@
 <div id="shell"><p style="padding:24px">Loading…</p></div>
 <div id="live" class="sr" aria-live="polite"></div>
 <!--JS--><script src="engine.js"></script><!--/JS-->
+<script>if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>
 </html>

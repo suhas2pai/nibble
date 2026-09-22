@@ -6,6 +6,7 @@
 - Learner-facing content lives in `content/` as plain JSON.
 - `src/engine.js` owns runtime behavior; `src/app.css` owns all styling; `src/index.html` is the source shell.
 - Account sign-up/sign-in and progress profiles are currently browser-local in `src/engine.js`; there is no server authentication or cross-device sync.
+- Learner settings, bookmarks, review dates, feedback, reminders, and accessibility preferences are also browser-local progress data.
 - The development app fetches JSON from `content/`. `npm run build` embeds the source, content, CSS, and JavaScript into `dist/index.html`.
 - Read [README.md](README.md) for workflow and architecture, and [docs/CONTENT-GUIDE.md](docs/CONTENT-GUIDE.md) for lesson schemas and writing rules.
 
@@ -29,6 +30,7 @@
 ## Generated files and changes
 
 - Do not hand-edit `dist/index.html`; regenerate it with `npm run build` after source or content changes.
+- `npm run build` also copies `src/sw.js` to `dist/sw.js`; keep the service worker in sync when changing offline behavior.
 - Preserve the replacement markers in `src/index.html`: `<!--CSS-->`, `<!--/CSS-->`, `<!--JS-->`, and `<!--/JS-->`.
 - Keep changes focused and inspect `git diff` before committing. Validate content and rebuild generated output when relevant.
 - `content/config.json` has `demo: true` controls for fake Pro, heart refill, and reset behavior; do not treat those as production billing or entitlement logic.

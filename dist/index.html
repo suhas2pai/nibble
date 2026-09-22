@@ -88,6 +88,9 @@ h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;margin:0}
 .account-pill{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:var(--brand-text)}
 
 .main{flex:1;overflow-y:auto;padding:18px 16px 28px}
+.library-tools{display:flex;gap:8px;align-items:center;margin:0 0 20px}.search{flex:1}.search input{width:100%;min-height:46px;border:2px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);font:500 15px 'Figtree',sans-serif;padding:9px 12px}.search input:focus{outline:0;border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-soft)}
+.small-btn{width:auto;min-height:44px;padding:0 10px;font-size:14px}.search-results{margin:0 0 24px}.section-title{font:600 20px 'Fredoka',sans-serif;margin:0 0 10px}.result{display:flex;gap:8px;margin:0 0 8px}.result-main{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:2px solid var(--line);border-radius:14px;background:var(--surface);padding:11px 13px;text-align:left;color:var(--ink)}.result-main span{font-size:13px;color:var(--ink2)}.bookmark{width:48px;border:2px solid var(--line);border-radius:14px;background:var(--surface);color:var(--sun-d);font-size:24px}.bookmark.saved{background:var(--sun-soft)}
+.notice{background:var(--mint-soft);border:2px solid var(--mint);border-radius:14px;padding:11px 13px;margin:0 0 16px;font-weight:600}.saved-row{display:block;width:100%;border:0;border-top:2px solid var(--line);background:transparent;text-align:left;padding:10px 0;color:var(--brand-text);font:600 15px 'Fredoka',sans-serif}.saved-row:first-of-type{border-top:0}.dashboard-card{margin-top:16px}.dashboard-tiles{margin-top:10px}.feedback{border-top:2px solid var(--line);margin-top:22px;padding-top:14px}.feedback p{margin:0 0 8px;color:var(--ink2)}.feedback-btn{border:2px solid var(--line);border-radius:12px;background:var(--surface);padding:8px 12px;margin-right:6px;color:var(--ink)}
 .welcome{display:flex;align-items:baseline;gap:7px;margin:2px 0 18px;color:var(--ink2);font:500 18px 'Fredoka',sans-serif}
 .welcome strong{color:var(--brand-text);font-size:26px}
 
@@ -227,13 +230,15 @@ h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;margin:0}
 .account-form input:focus{border-color:var(--brand);outline:0;box-shadow:0 0 0 3px var(--brand-soft)}
 .auth-error{color:var(--bad-text)!important;font-size:14px;margin:0 0 12px!important}
 .account-email{font:600 17px 'Fredoka',sans-serif;color:var(--brand-text)!important}
-.account-page{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px}
+.account-page{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px}.account-page h2{font:600 20px 'Fredoka',sans-serif;margin:0 0 10px}.settings-form{display:grid;gap:12px}.settings-form label{display:flex;align-items:center;gap:10px;font-weight:600}.settings-form input{width:20px;height:20px;accent-color:var(--brand)}
 .toast{position:absolute;left:16px;right:16px;bottom:82px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 16px;font-weight:600;text-align:center;z-index:60}
 
 @media (prefers-reduced-motion: reduce){
   *{animation:none!important;transition:none!important}
   .confetti{display:none}
 }
+.large-text{font-size:18px}.large-text .q{font-size:28px}.large-text .opt,.large-text .bub{font-size:18px}.large-text .nav button{font-size:15px}.relaxed-mode .hp{display:none}.relaxed-mode .node,.relaxed-mode .unit{box-shadow:none}
+[data-theme="reduced"] *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 
 /* ---- engine additions ---- */
 button.unit,button.unit-mini{width:100%;text-align:left;font-family:inherit;cursor:pointer}
@@ -280,7 +285,7 @@ const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`
 const CHECKABLE = ['mc', 'fill', 'spot', 'order', 'match'];
 
 let CFG, C, LES, P, KEY, ACCOUNT, ACCOUNT_KEY, ACCOUNTS_KEY;
-const S = { tab: 'learn', modal: null, lesson: false, rs: false, open: {}, billing: 'year' };
+const S = { tab: 'learn', modal: null, lesson: false, rs: false, open: {}, billing: 'year', search: '' };
 let L = null;
 
 /* ---------- content loading ---------- */
@@ -303,7 +308,7 @@ const store = {
   set(k, v) { mem[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
 };
 const now = () => Date.now();
-const fresh = () => ({ xp: 0, streak: 0, lastDay: null, hearts: CFG.hearts.max, heartsAt: now(), done: {}, missed: [], pro: false });
+const fresh = () => ({ xp: 0, streak: 0, lastDay: null, hearts: CFG.hearts.max, heartsAt: now(), done: {}, missed: [], review: {}, bookmarks: [], feedback: {}, reminder: null, settings: { largeText: false, reducedMotion: false, relaxed: false }, pro: false });
 function save() {
   if (!ACCOUNT) { store.set(KEY, P); return; }
   const all = store.get(ACCOUNTS_KEY) || {};
@@ -318,6 +323,13 @@ async function passwordHash(password) {
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 function accountProgress(progress) { return Object.assign(fresh(), progress || {}); }
+function settings() { return P.settings || (P.settings = { largeText: false, reducedMotion: false, relaxed: false }); }
+function applySettings() {
+  const s = settings();
+  document.documentElement.classList.toggle('large-text', !!s.largeText);
+  document.documentElement.classList.toggle('relaxed-mode', !!s.relaxed);
+  document.documentElement.dataset.theme = s.reducedMotion ? 'reduced' : '';
+}
 function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function yesterdayKey() { const d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
 const streakNow = () => (P.lastDay === dayKey() || P.lastDay === yesterdayKey() ? P.streak : 0);
@@ -335,6 +347,7 @@ function regen() {
   if (g > 0) { P.hearts = Math.min(max, P.hearts + g); P.heartsAt = P.hearts >= max ? now() : P.heartsAt + g * ms; }
 }
 function loseHeart() {
+  if (P.settings && P.settings.relaxed) return;
   if (P.pro) return;
   if (P.hearts >= CFG.hearts.max) P.heartsAt = now();
   P.hearts = Math.max(0, P.hearts - 1);
@@ -359,6 +372,14 @@ function lessonStates() {
     map[x.id] = st;
   });
   return map;
+}
+function dueReview() {
+  const today = dayKey();
+  return Object.entries(P.review || {}).filter(([, date]) => date <= today).map(([id]) => id);
+}
+function scheduleReview(id, days) {
+  const d = new Date(); d.setDate(d.getDate() + days);
+  P.review[id] = dayKey(d);
 }
 
 /* ---------- icons + mascot ---------- */
@@ -491,7 +512,7 @@ function initLesson(o) {
 }
 function openLesson(id) {
   regen();
-  if (!P.pro && P.hearts <= 0) {
+  if (!P.pro && !(P.settings && P.settings.relaxed) && P.hearts <= 0) {
     const acts = [{ label: 'Get unlimited hearts with Pro', act: 'pro', cls: 'brand' }];
     if (CFG.demo) acts.push({ label: 'Refill hearts (demo)', act: 'refillHome', cls: 'sun' });
     acts.push({ label: 'Close', act: 'close', cls: 'ghost' });
@@ -557,12 +578,17 @@ function topHTML() {
   </div>`;
 }
 function navHTML() {
-  const t = [['learn', 'Learn', ic.home()], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()], ['account', 'Account', ic.user()]];
+  const t = [['learn', 'Learn', ic.home()], ['dashboard', 'Progress', ic.star(24)], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()], ['account', 'Account', ic.user()]];
   return t.map((x) => `<button data-tab="${x[0]}" ${S.tab === x[0] ? 'aria-current="page"' : ''}><span class="ico">${x[2]}${x[0] === 'practice' && P.missed.length ? `<span class="dot" aria-label="${P.missed.length} to review">${P.missed.length}</span>` : ''}</span>${x[1]}</button>`).join('');
 }
 function homeHTML() {
   const st = lessonStates();
   let h = ACCOUNT && ACCOUNT.firstName ? `<div class="welcome"><span>Welcome back,</span><strong>${esc(ACCOUNT.firstName)}</strong></div>` : '';
+  h += `<div class="library-tools"><label class="search"><span class="sr">Search lessons</span><input id="lesson-search" type="search" placeholder="Search lessons and concepts" value="${esc(S.search)}"></label><button class="btn ghost small-btn" data-act="clearSearch">${S.search ? 'Clear' : 'Browse all'}</button></div>`;
+  if (S.search) {
+    const q = S.search.toLowerCase(), matches = flat().filter((x) => { const l = LES[x.id]; return l.title.toLowerCase().includes(q) || l.cards.some((c) => JSON.stringify(c).toLowerCase().includes(q)); });
+    h += `<section class="search-results"><h2 class="section-title">Search results</h2>${matches.length ? matches.map((x) => `<div class="result"><button class="result-main" data-act="node" data-id="${esc(x.id)}"><b>${esc(LES[x.id].title)}</b><span>${esc(x.unit.title)}</span></button><button class="bookmark ${P.bookmarks.includes(x.id) ? 'saved' : ''}" data-act="bookmark" data-id="${esc(x.id)}" aria-label="${P.bookmarks.includes(x.id) ? 'Remove bookmark' : 'Bookmark lesson'}">${P.bookmarks.includes(x.id) ? '★' : '☆'}</button></div>`).join('') : '<p class="fine">No lessons match that search.</p>'}</section>`;
+  }
   C.tracks.forEach((t) => {
     if (C.tracks.length > 1) h += `<h2 class="trk">${esc(t.title)}</h2>`;
     t.units.forEach((u, ui) => {
@@ -591,12 +617,18 @@ function homeHTML() {
   return h + '<p class="soon">More units are on the way.</p>';
 }
 function practiceHTML() {
-  const n = P.missed.length, total = flat().length, doneN = Object.keys(P.done).length;
+  const n = P.missed.length, due = dueReview().length, total = flat().length, doneN = Object.keys(P.done).length;
   const head = n
     ? `<div class="card">${mascot(84)}<h2>${n} ${n === 1 ? 'question' : 'questions'} to review</h2><p>Questions you missed come back here until you get them right.</p><button class="btn brand" data-act="practice">Review now</button></div>`
     : `<div class="card">${mascot(84)}<h2>Nothing to review yet</h2><p>Questions you miss show up here so you can lock them in.</p><button class="btn brand" data-act="goLearn">Go to lessons</button></div>`;
-  return `<h1 class="ph">Practice</h1><p class="sub">A few minutes on what you've missed beats a long re-read.</p>${head}
+  return `<h1 class="ph">Practice</h1><p class="sub">A few minutes on what you've missed beats a long re-read.</p>${due ? `<div class="notice">${due} ${due === 1 ? 'lesson is' : 'lessons are'} ready for spaced review.</div>` : ''}${head}
     <div class="tiles solo"><div class="tile" style="--c:var(--mint)"><b>Lessons done</b><span>${doneN}/${total}</span></div><div class="tile" style="--c:var(--sun)"><b>Total XP</b><span>${P.xp}</span></div><div class="tile" style="--c:var(--coral)"><b>Day streak</b><span>${streakNow()}</span></div></div>`;
+}
+function dashboardHTML() {
+  const total = flat().length, doneN = Object.keys(P.done).length, saved = P.bookmarks.length, due = dueReview().length;
+  const accuracy = Object.values(P.done).length ? Math.round(Object.values(P.done).reduce((sum, x) => sum + x.best, 0) / doneN) : 0;
+  const badges = [doneN >= 1 ? 'First lesson' : '', doneN >= 5 ? 'Five lessons' : '', P.streak >= 3 ? 'Three-day streak' : '', P.xp >= 100 ? '100 XP' : ''].filter(Boolean);
+  return `<h1 class="ph">Your progress</h1><p class="sub">A clear view of what you know and what to review next.</p><div class="tiles dashboard-tiles"><div class="tile" style="--c:var(--mint)"><b>Lessons</b><span>${doneN}/${total}</span></div><div class="tile" style="--c:var(--sun)"><b>Accuracy</b><span>${accuracy}%</span></div><div class="tile" style="--c:var(--coral)"><b>XP</b><span>${P.xp}</span></div></div><section class="card dashboard-card"><h2>${due ? 'Review is ready' : 'You are on track'}</h2><p>${due ? `${due} spaced-review ${due === 1 ? 'lesson is' : 'lessons are'} due.` : 'Complete another lesson to build your review queue.'}</p><button class="btn brand" data-act="goPractice">${due ? 'Review now' : 'Open practice'}</button></section><section class="card dashboard-card"><h2>Saved lessons</h2><p>${saved ? `${saved} lesson${saved === 1 ? '' : 's'} bookmarked for later.` : 'Bookmark lessons from Learn to find them here.'}</p>${P.bookmarks.map((id) => `<button class="saved-row" data-act="node" data-id="${esc(id)}">${esc(LES[id] && LES[id].title || id)}</button>`).join('')}</section><section class="card dashboard-card"><h2>Achievements</h2><p>${badges.length ? badges.join(' · ') : 'Your first badge is waiting.'}</p><button class="btn sun" data-act="shareProgress">Share progress</button></section>`;
 }
 function plansHTML() {
   const y = S.billing === 'year', per = y ? 'year' : 'month';
@@ -621,6 +653,8 @@ function plansHTML() {
 function accountHTML() {
   return `<h1 class="ph">Your account</h1><p class="sub">Keep your profile up to date while you learn.</p>
     <section class="account-page"><p class="account-email">${esc(ACCOUNT.email)}</p><form id="profile-form" class="account-form"><label for="profile-first">First name</label><input id="profile-first" name="firstName" type="text" autocomplete="given-name" maxlength="40" required value="${esc(ACCOUNT.firstName || '')}"><label for="profile-last">Last name</label><input id="profile-last" name="lastName" type="text" autocomplete="family-name" maxlength="40" required value="${esc(ACCOUNT.lastName || '')}"><button class="btn brand" type="submit">Save profile</button></form><p class="fine">Your progress is saved in this browser for this account. Cross-device sync needs a connected server.</p></section>
+    <section class="account-page"><h2>Learning preferences</h2><form id="settings-form" class="settings-form"><label><input type="checkbox" name="largeText" ${settings().largeText ? 'checked' : ''}> Larger text</label><label><input type="checkbox" name="reducedMotion" ${settings().reducedMotion ? 'checked' : ''}> Reduce motion</label><label><input type="checkbox" name="relaxed" ${settings().relaxed ? 'checked' : ''}> Relaxed mode (no hearts)</label><button class="btn mint" type="submit">Save preferences</button></form></section>
+    <section class="account-page"><h2>Daily reminder</h2><p class="fine">Browser reminders work on this device only.</p><form id="reminder-form" class="account-form"><label for="reminder-time">Reminder time</label><input id="reminder-time" name="time" type="time" value="${esc(P.reminder || '')}"><button class="btn sun" type="submit">${P.reminder ? 'Update reminder' : 'Enable reminder'}</button></form></section>
     <button class="btn coral" data-act="signout">Sign out</button>`;
 }
 function modalHTML() {
@@ -639,7 +673,7 @@ function bodyHTML(c) {
   if (L.fin) {
     return `<div class="done">${L.conf}${mascot(128, 'cheer')}<h1>${L.practice ? 'Practice complete' : 'Lesson complete'}</h1>
       <p>${L.practice ? 'Reviewing what you missed is how it sticks.' : 'Nice work. ' + (L.bonus ? 'A perfect run earns bonus XP.' : 'Keep the streak going.')}</p>
-      <div class="tiles"><div class="tile" style="--c:var(--sun)"><b>XP earned</b><span>+${L.xp}</span></div><div class="tile" style="--c:var(--mint)"><b>Accuracy</b><span>${L.acc}%</span></div><div class="tile" style="--c:var(--coral)"><b>Day streak</b><span>${streakNow()}</span></div></div></div>`;
+      <div class="tiles"><div class="tile" style="--c:var(--sun)"><b>XP earned</b><span>+${L.xp}</span></div><div class="tile" style="--c:var(--mint)"><b>Accuracy</b><span>${L.acc}%</span></div><div class="tile" style="--c:var(--coral)"><b>Day streak</b><span>${streakNow()}</span></div></div>${!L.practice ? `<div class="feedback"><p>Was this lesson useful?</p><button class="feedback-btn" data-act="feedback" data-v="yes">Yes</button><button class="feedback-btn" data-act="feedback" data-v="no">Needs work</button></div>` : ''}</div>`;
   }
   if (L.out) return `<div class="done">${mascot(120, 'sad')}<h1>Out of hearts</h1><p>Hearts refill over time. Pro members never run out.</p></div>`;
   const chk = L.phase === 'fb';
@@ -711,7 +745,7 @@ function footHTML(c) {
 }
 function lessonHTML() {
   const c = cur(), pct = Math.min(100, Math.round((L.done / L.total) * 100));
-  const hearts = L.practice ? '' : `<div class="hp" aria-label="${P.pro ? 'Unlimited' : P.hearts} hearts">${ic.heart()}${P.pro ? '∞' : P.hearts}</div>`;
+  const hearts = L.practice || (P.settings && P.settings.relaxed) ? '' : `<div class="hp" aria-label="${P.pro ? 'Unlimited' : P.hearts} hearts">${ic.heart()}${P.pro ? '∞' : P.hearts}</div>`;
   return `<section class="lesson" aria-label="${esc(L.title)}"><div class="l-top"><button class="x" data-act="quit" aria-label="Quit lesson">${ic.x()}</button>
     <div class="bar" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>${hearts || '<span style="min-width:52px"></span>'}</div>
     <div class="l-body">${bodyHTML(c)}</div>${footHTML(c)}</section>`;
@@ -722,17 +756,19 @@ function render() {
   const shell = $('#shell');
   regen();
   const ae = document.activeElement; let fk = null;
-  if (ae && ae !== document.body && ae.dataset && (ae.dataset.act || ae.dataset.tab)) {
+  if (ae && ae.id === 'lesson-search') fk = '#lesson-search';
+  else if (ae && ae !== document.body && ae.dataset && (ae.dataset.act || ae.dataset.tab)) {
     fk = ae.dataset.tab ? `[data-tab="${ae.dataset.tab}"]` : `[data-act="${ae.dataset.act}"]` + (ae.dataset.i !== undefined ? `[data-i="${ae.dataset.i}"]` : '') + (ae.dataset.v ? `[data-v="${ae.dataset.v}"]` : '') + (ae.dataset.p ? `[data-p="${ae.dataset.p}"]` : '');
   }
   const m0 = shell.querySelector('.main'), l0 = shell.querySelector('.l-body');
   const ms = m0 ? m0.scrollTop : 0, ls = l0 ? l0.scrollTop : 0;
   const lock = S.lesson || S.modal;
-  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : accountHTML();
+  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : S.tab === 'dashboard' ? dashboardHTML() : accountHTML();
   shell.innerHTML = `<header class="top" ${lock ? 'inert' : ''}>${topHTML()}</header><main class="main" ${lock ? 'inert' : ''}>${view}</main><nav class="nav" aria-label="Main" ${lock ? 'inert' : ''}>${navHTML()}</nav>${S.lesson && L ? lessonHTML() : ''}${S.modal ? modalHTML() : ''}`;
   const m1 = shell.querySelector('.main'), l1 = shell.querySelector('.l-body');
   if (!S.rs) { if (m1) m1.scrollTop = ms; if (l1) l1.scrollTop = ls; }
   S.rs = false;
+  applySettings();
   if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); }
   else if (fk) { const el = shell.querySelector(fk); if (el && !el.disabled) el.focus({ preventScroll: true }); }
   $('#live').textContent = (S.lesson && L && L.phase === 'fb') ? (L.ok ? 'Right' : 'Not quite') : '';
@@ -768,6 +804,32 @@ const A = {
     ACCOUNT = { ...ACCOUNT, firstName, lastName };
     save(); render(); toast('Profile saved.');
   },
+  settingsSubmit(form) {
+    P.settings = { largeText: form.largeText.checked, reducedMotion: form.reducedMotion.checked, relaxed: form.relaxed.checked };
+    save(); render(); toast('Preferences saved.');
+  },
+  async reminderSubmit(form) {
+    if (!form.time.value) { P.reminder = null; save(); render(); toast('Reminder disabled.'); return; }
+    if ('Notification' in window && Notification.permission === 'default') await Notification.requestPermission();
+    P.reminder = form.time.value; save(); render(); toast('Daily reminder saved on this device.');
+  },
+  bookmark(b) {
+    const id = b.dataset.id, i = P.bookmarks.indexOf(id);
+    if (i === -1) P.bookmarks.push(id); else P.bookmarks.splice(i, 1);
+    save(); render();
+  },
+  clearSearch() { S.search = ''; render(); },
+  goPractice() { S.tab = 'practice'; S.rs = true; render(); },
+  async shareProgress() {
+    const name = ACCOUNT && ACCOUNT.firstName ? ACCOUNT.firstName : 'I';
+    const text = `${name} has completed ${Object.keys(P.done).length} Nibble lessons and earned ${P.xp} XP.`;
+    try {
+      if (navigator.share) await navigator.share({ title: 'My Nibble progress', text });
+      else if (navigator.clipboard) { await navigator.clipboard.writeText(text); toast('Progress summary copied.'); }
+      else toast(text);
+    } catch (e) { /* sharing can be cancelled */ }
+  },
+  feedback(b) { if (L && L.id) { P.feedback[L.id] = b.dataset.v; save(); toast('Thanks for the feedback.'); } },
   node(b) {
     const id = b.dataset.id, s = lessonStates()[id];
     if (s === 'locked') { S.modal = { title: 'Locked', body: 'Finish the lesson before this one to unlock it.', actions: [{ label: 'Got it', act: 'close', cls: 'brand' }] }; render(); return; }
@@ -811,12 +873,12 @@ const A = {
     L.ok = ok; L.phase = 'fb';
     if (!ok && !L.practice) loseHeart();
     if (ok && !c.retry) L.first++;
-    if (!ok && !c.retry && !L.practice) addMissed(L.id, c.id);
+    if (!ok && !c.retry && !L.practice) { addMissed(L.id, c.id); scheduleReview(L.id, 1); }
     if (ok && !c.retry && L.practice && c._m) removeMissed(c._m);
     save(); render();
   },
   next() {
-    if (L.phase === 'fb' && !L.ok && !P.pro && P.hearts === 0 && !L.practice) { L.out = true; render(); return; }
+    if (L.phase === 'fb' && !L.ok && !P.pro && !(P.settings && P.settings.relaxed) && P.hearts === 0 && !L.practice) { L.out = true; render(); return; }
     advance();
   },
   wact(b) { const c = cur(); widgets[c.widget].act && widgets[c.widget].act(b.dataset.w, c, W(c)); },
@@ -833,11 +895,14 @@ document.addEventListener('click', (e) => {
 });
 document.addEventListener('submit', (e) => {
   if (e.target.id === 'profile-form') { e.preventDefault(); A.profileSubmit(e.target); return; }
+  if (e.target.id === 'settings-form') { e.preventDefault(); A.settingsSubmit(e.target); return; }
+  if (e.target.id === 'reminder-form') { e.preventDefault(); A.reminderSubmit(e.target); return; }
   if (e.target.id !== 'auth-form') return;
   e.preventDefault();
   A.authSubmit(e.target);
 });
 document.addEventListener('input', (e) => {
+  if (e.target.id === 'lesson-search') { S.search = e.target.value; render(); return; }
   if (!L || !S.lesson) return;
   const c = cur();
   if (c.type === 'widget' && widgets[c.widget].input) widgets[c.widget].input(e, c, W(c));
@@ -852,6 +917,12 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.modal)
     const accounts = store.get(ACCOUNTS_KEY) || {}, active = store.get(ACCOUNT_KEY);
     ACCOUNT = active && accounts[active] ? accounts[active] : null;
     P = ACCOUNT ? accountProgress(ACCOUNT.progress) : accountProgress(store.get(KEY));
+    setInterval(() => {
+      if (!ACCOUNT || !P.reminder || !('Notification' in window) || Notification.permission !== 'granted') return;
+      const t = new Date(), at = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+      const stamp = dayKey(t) + ' ' + at;
+      if (at === P.reminder && P.lastReminder !== stamp) { P.lastReminder = stamp; save(); new Notification('Time for a Nibble', { body: 'Keep your AI learning streak going.' }); }
+    }, 30000);
     document.title = CFG.name + ': ' + CFG.tagline;
     render();
   } catch (err) {
@@ -861,5 +932,6 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.modal)
 })();
 
 </script>
+<script>if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>
 </html>

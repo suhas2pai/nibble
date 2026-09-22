@@ -18,6 +18,7 @@ if (errors.length) {
 const tpl = readFileSync(join(root, 'src/index.html'), 'utf8');
 const css = readFileSync(join(root, 'src/app.css'), 'utf8');
 const js = readFileSync(join(root, 'src/engine.js'), 'utf8');
+const sw = readFileSync(join(root, 'src/sw.js'), 'utf8');
 const json = JSON.stringify({ config: content.config, course: content.course, lessons: content.lessons }).replace(/</g, '\\u003c');
 
 const out = tpl
@@ -26,4 +27,5 @@ const out = tpl
 
 mkdirSync(join(root, 'dist'), { recursive: true });
 writeFileSync(join(root, 'dist/index.html'), out);
+writeFileSync(join(root, 'dist/sw.js'), sw);
 console.log(`Built dist/index.html (${(out.length / 1024).toFixed(0)} KB, ${Object.keys(content.lessons).length} lessons)`);
