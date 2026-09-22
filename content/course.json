@@ -45,6 +45,7 @@
           "color": "sun",
           "tier": "free",
           "lessons": [
+<<<<<<< HEAD
             "what-is-an-agent",
             "the-agent-loop",
             "agent-guardrails"
@@ -66,6 +67,9 @@
             "why-ai-matters-for-leaders",
             "build-buy-or-partner",
             "ai-risk-and-governance"
+=======
+            "what-is-an-agent"
+>>>>>>> 0b693b1e29c27a1bbd3a5c821170d92b5a3cd1f0
           ]
         }
       ]
