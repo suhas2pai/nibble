@@ -1,0 +1,74 @@
+{
+  "tracks": [
+    {
+      "id": "foundations",
+      "title": "Foundations",
+      "units": [
+        {
+          "id": "ai-basics",
+          "title": "AI basics",
+          "blurb": "What AI is, and what it isn't",
+          "color": "brand",
+          "tier": "free",
+          "lessons": [
+            "what-is-ai",
+            "ai-ml-llm",
+            "what-ai-cant-do"
+          ]
+        },
+        {
+          "id": "how-llms-work",
+          "title": "How LLMs work",
+          "blurb": "Tokens, temperature, context, and why models make things up",
+          "color": "mint",
+          "tier": "free",
+          "lessons": [
+            "how-an-llm-answers",
+            "context-windows",
+            "why-models-make-things-up"
+          ]
+        },
+        {
+          "id": "prompting",
+          "title": "Prompting",
+          "blurb": "Write prompts that get better answers",
+          "color": "coral",
+          "tier": "free",
+          "lessons": [
+            "prompt-basics"
+          ]
+        },
+        {
+          "id": "agents",
+          "title": "Agents and tools",
+          "blurb": "Let models take actions, safely",
+          "color": "sun",
+          "tier": "free",
+          "lessons": [
+            "what-is-an-agent",
+            "the-agent-loop",
+            "agent-guardrails"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "for-leaders",
+      "title": "For leaders",
+      "units": [
+        {
+          "id": "leading-ai",
+          "title": "Leading AI work",
+          "blurb": "What to ask before you fund, build or govern an AI project",
+          "color": "mint",
+          "tier": "free",
+          "lessons": [
+            "why-ai-matters-for-leaders",
+            "build-buy-or-partner",
+            "ai-risk-and-governance"
+          ]
+        }
+      ]
+    }
+  ]
+}

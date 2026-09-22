@@ -1,0 +1,82 @@
+{
+  "id": "agent-guardrails",
+  "title": "Agent guardrails",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "The more an agent can do on its own, the more it can get wrong on its own. **Guardrails** are the rules that keep its actions inside a safe range."
+    },
+    {
+      "id": "c2",
+      "type": "match",
+      "q": "Match each guardrail to what it limits",
+      "pairs": [
+        [
+          "Permission scope",
+          "Which tools or data the agent can touch"
+        ],
+        [
+          "Approval step",
+          "A person signs off before a risky action runs"
+        ],
+        [
+          "Rate limit",
+          "How many actions it can take per minute"
+        ],
+        [
+          "Audit log",
+          "A record of every action, for review later"
+        ]
+      ],
+      "why": "Each guardrail limits a different kind of risk: reach, timing, speed, and accountability after the fact."
+    },
+    {
+      "id": "c3",
+      "type": "mc",
+      "q": "An agent can send emails for you. What's the safest default?",
+      "options": [
+        "Let it send anything instantly",
+        "Have it draft the email and wait for your approval",
+        "Never let it touch email at all"
+      ],
+      "answer": 1,
+      "why": "Drafting and waiting keeps the speed benefit while a person still catches mistakes before anything goes out. Blocking it entirely gives up the upside for no reason."
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "Myth or fact: giving an agent broader permissions always makes it more useful.",
+      "options": [
+        "Fact",
+        "Myth"
+      ],
+      "answer": 1,
+      "why": "Broader permissions raise capability and risk together. Scoping access to just what the task needs is usually the better trade."
+    },
+    {
+      "id": "c5",
+      "type": "spot",
+      "q": "One of these habits is actually risky. Tap it.",
+      "sentences": [
+        "Start a new agent with the narrowest access it needs.",
+        "Give a brand-new agent full access on day one so nothing gets blocked.",
+        "Log every action so mistakes can be traced later."
+      ],
+      "answer": 1,
+      "why": "Starting broad means a bug or a bad prompt can do maximum damage on day one. Start narrow, and widen access deliberately once it's earned trust."
+    },
+    {
+      "id": "c6",
+      "type": "order",
+      "q": "Put a safe rollout of a new agent capability in order",
+      "steps": [
+        "Test the action in a sandbox with fake data",
+        "Add it live, but with a required human approval step",
+        "Watch real runs closely for a while",
+        "Remove the approval step once it's proven reliable"
+      ],
+      "why": "Sandbox, then human-checked, then supervised, then autonomous. Trust is earned in stages, not assumed on day one."
+    }
+  ]
+}

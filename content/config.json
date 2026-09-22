@@ -1,0 +1,92 @@
+{
+  "name": "Nibble",
+  "tagline": "AI in bite-size lessons",
+  "storageKey": "nibble.v1",
+  "demo": true,
+  "hearts": {
+    "max": 5,
+    "regenMinutes": 30
+  },
+  "xp": {
+    "lesson": 15,
+    "replay": 5,
+    "practice": 5,
+    "perfectBonus": 5
+  },
+  "billing": {
+    "yearlySavings": "33%"
+  },
+  "plans": [
+    {
+      "id": "free",
+      "name": "Free",
+      "note": "Enough to build a real habit",
+      "price": {
+        "month": "$0",
+        "year": "$0"
+      },
+      "per": {
+        "month": "",
+        "year": ""
+      },
+      "sub": {
+        "month": "",
+        "year": ""
+      },
+      "features": [
+        "Units 1 and 2: AI basics and How LLMs work",
+        "A daily lesson and streaks",
+        "5 hearts that refill over time",
+        "Practice mode for missed questions"
+      ],
+      "cta": "Current plan"
+    },
+    {
+      "id": "pro",
+      "name": "Pro",
+      "highlight": true,
+      "note": {
+        "month": "Cancel anytime",
+        "year": "About $6.67 a month"
+      },
+      "price": {
+        "month": "$10",
+        "year": "$80"
+      },
+      "per": {
+        "month": " a month",
+        "year": " a year"
+      },
+      "features": [
+        "Every track, with new lessons each week",
+        "Unlimited hearts",
+        "AI tutor that explains it another way",
+        "Shareable certificates",
+        "Offline lessons"
+      ],
+      "cta": "Try Pro free for 7 days"
+    },
+    {
+      "id": "teams",
+      "name": "Teams",
+      "note": "For companies upskilling on AI",
+      "price": {
+        "month": "$12",
+        "year": "$12"
+      },
+      "per": {
+        "month": " per seat a month",
+        "year": " per seat a month"
+      },
+      "features": [
+        "Everything in Pro",
+        "Manager dashboard and completion reports",
+        "Custom tracks for your industry, such as GxP, healthcare or finance",
+        "Single sign-on"
+      ],
+      "cta": "Talk to us",
+      "cls": "sun"
+    }
+  ],
+  "plansNote": "Prices are placeholders for testing. Checkout isn't connected."
+}

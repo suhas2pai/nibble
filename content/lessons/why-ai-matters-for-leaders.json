@@ -1,0 +1,84 @@
+{
+  "id": "why-ai-matters-for-leaders",
+  "title": "Why this matters for leaders",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "You don't need to write code to lead AI work well. You need to know what it's actually good at, what it costs, and where the risk sits."
+    },
+    {
+      "id": "c2",
+      "type": "mc",
+      "q": "Which question matters most before approving an AI project?",
+      "options": [
+        "What's the flashiest demo we can show?",
+        "What decision or task does this improve, and how will we know?",
+        "Which vendor has the biggest marketing budget?"
+      ],
+      "answer": 1,
+      "why": "A clear, measurable improvement beats an impressive demo. If you can't state what gets better, the project isn't ready to fund."
+    },
+    {
+      "id": "c3",
+      "type": "spot",
+      "q": "One line here is a red flag in a project pitch. Tap it.",
+      "sentences": [
+        "The team can name the metric this is expected to move.",
+        "The team says accuracy will \"just get better over time\", with no plan for how.",
+        "The team has a plan for what happens when the model is wrong."
+      ],
+      "answer": 1,
+      "why": "\"It'll improve\" isn't a plan. Ask how, by when, and what happens if it doesn't."
+    },
+    {
+      "id": "c4",
+      "type": "match",
+      "q": "Match the role to what it mainly brings to an AI project",
+      "pairs": [
+        [
+          "Domain expert",
+          "Knows what a right answer actually looks like"
+        ],
+        [
+          "Engineer",
+          "Builds and maintains the system"
+        ],
+        [
+          "Risk or compliance owner",
+          "Decides what oversight the use case needs"
+        ],
+        [
+          "Sponsor",
+          "Owns the budget and the outcome"
+        ]
+      ],
+      "why": "AI projects usually stall from a missing role, not from a weak model."
+    },
+    {
+      "id": "c5",
+      "type": "mc",
+      "q": "A team wants to ship an AI feature with no way to check its accuracy after launch. What's your call?",
+      "options": [
+        "Approve it, speed matters most",
+        "Ask for a way to catch errors before it ships",
+        "Cancel the project outright"
+      ],
+      "answer": 1,
+      "why": "You don't need to block AI work to lead it responsibly, you need a way to catch problems. That's usually a small ask that saves a much larger cleanup later."
+    },
+    {
+      "id": "c6",
+      "type": "fill",
+      "before": "Before funding an AI project, a leader should be able to state the",
+      "after": "it is meant to move.",
+      "options": [
+        "metric",
+        "logo",
+        "slogan"
+      ],
+      "answer": 0,
+      "why": "If nobody can name what should move, there's no way to tell later whether the project worked."
+    }
+  ]
+}

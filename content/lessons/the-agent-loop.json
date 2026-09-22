@@ -1,0 +1,81 @@
+{
+  "id": "the-agent-loop",
+  "title": "The agent loop",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "A common pattern for agents is **think, act, observe**: reason about what to do, take one action, look at what happened, then repeat.",
+      "points": [
+        "Think: reason about the next step",
+        "Act: call a tool",
+        "Observe: read what came back",
+        "Repeat, or stop"
+      ]
+    },
+    {
+      "id": "c2",
+      "type": "mc",
+      "q": "Right after a \"think\" step, what usually happens?",
+      "options": [
+        "The loop always ends",
+        "An action is taken based on that thought",
+        "The user approves every single thought",
+        "The model retrains itself"
+      ],
+      "answer": 1,
+      "why": "Thinking leads to acting. The agent reasons briefly, then does one concrete thing based on that reasoning."
+    },
+    {
+      "id": "c3",
+      "type": "order",
+      "q": "An agent is booking a restaurant table. Put its loop in order.",
+      "steps": [
+        "Think: check what tables are open tonight",
+        "Act: call the reservation tool",
+        "Observe: the tool returns two open times",
+        "Think: 7pm works, so book it",
+        "Act: submit the booking"
+      ],
+      "why": "Each round of thinking leads to one action, and the result of that action feeds the next round."
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "Why does an agent loop need an explicit stopping condition?",
+      "options": [
+        "To limit cost and prevent endless retries if a tool keeps failing",
+        "So it forgets what it already did",
+        "Because loops aren't allowed in most systems",
+        "To force exactly ten steps every time"
+      ],
+      "answer": 0,
+      "why": "Without a limit, a stuck tool or a confused agent can loop forever, burning time and money. A cap or a clear goal check keeps it bounded."
+    },
+    {
+      "id": "c5",
+      "type": "spot",
+      "q": "One statement about the loop is wrong. Tap it.",
+      "sentences": [
+        "An agent can call a tool more than once during one task.",
+        "Every agent loop must finish in exactly one step.",
+        "An agent can decide the goal is met and stop early."
+      ],
+      "answer": 1,
+      "why": "The loop can take as many steps as the task needs. Forcing exactly one step would defeat the point of looping at all."
+    },
+    {
+      "id": "c6",
+      "type": "fill",
+      "before": "Repeating think, act and observe until the goal is met is called the agent's",
+      "after": ".",
+      "options": [
+        "loop",
+        "license",
+        "ledger"
+      ],
+      "answer": 0,
+      "why": "This think-act-observe cycle is often called the agent loop, or the ReAct pattern in research papers."
+    }
+  ]
+}

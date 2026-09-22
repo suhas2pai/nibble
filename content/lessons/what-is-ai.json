@@ -1,0 +1,72 @@
+{
+  "id": "what-is-ai",
+  "title": "What is AI?",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "**AI** is software that handles tasks we usually think need human judgment, like spotting a face in a photo, translating a sentence, or drafting an email."
+    },
+    {
+      "id": "c2",
+      "type": "mc",
+      "q": "Which of these is a typical AI task?",
+      "options": [
+        "Adding two numbers",
+        "Displaying today's date",
+        "Sorting photos by who appears in them",
+        "Copying a file"
+      ],
+      "answer": 2,
+      "why": "Recognizing people in photos means finding patterns in messy data, which is where AI shines. The others follow fixed rules."
+    },
+    {
+      "id": "c3",
+      "type": "match",
+      "q": "Match each tool to what it does",
+      "pairs": [
+        [
+          "Spam filter",
+          "Sorts email into junk and not junk"
+        ],
+        [
+          "Navigation app",
+          "Predicts travel time from traffic patterns"
+        ],
+        [
+          "Voice assistant",
+          "Turns speech into text, then acts on it"
+        ],
+        [
+          "Chatbot",
+          "Writes a reply to your message"
+        ]
+      ],
+      "why": "Each one learns patterns from data instead of following a hand-written rule for every case."
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "Myth or fact: AI understands the world the way a person does.",
+      "options": [
+        "Fact",
+        "Myth"
+      ],
+      "answer": 1,
+      "why": "Today's AI finds patterns in data. It can be very useful without experiencing or understanding things the way a person does."
+    },
+    {
+      "id": "c5",
+      "type": "fill",
+      "before": "AI systems learn",
+      "after": "from examples instead of relying only on hand-written rules.",
+      "options": [
+        "patterns",
+        "passwords",
+        "furniture"
+      ],
+      "answer": 0,
+      "why": "Learning patterns from lots of examples is the core idea behind machine learning."
+    }
+  ]
+}

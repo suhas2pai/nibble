@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nibble</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --page:#E4E0F8; --bg:#F4F2FF; --surface:#FFFFFF; --ink:#22204A; --ink2:#5A5786; --line:#E1DDF5;
+  --brand:#5B5BFF; --brand-d:#3A3AC9; --brand-soft:#E9E8FF; --brand-text:#3A3AC9;
+  --sun:#FFC93C; --sun-d:#D9A100; --sun-soft:#FFF1C4;
+  --mint:#33D6A8; --mint-d:#17A07A; --mint-soft:#D6F7EC;
+  --coral:#FF7391; --coral-d:#D64A6C; --coral-soft:#FFE0E7;
+  --lav-soft:#EADFFF;
+  --lock:#DAD7EE; --lock-d:#BDB9DA;
+  --ok-text:#0E7556; --bad-text:#B32A4E;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --page:#0E0D28; --bg:#17153A; --surface:#232156; --ink:#F2F0FF; --ink2:#B0ADDC; --line:#36337C;
+    --brand-d:#3A3AC9; --brand-soft:#2E2D75; --brand-text:#B4B4FF;
+    --sun-soft:#4C4113; --mint-soft:#134639; --coral-soft:#52233A; --lav-soft:#3F2D78;
+    --lock:#3B3879; --lock-d:#292659;
+    --ok-text:#6BF0C7; --bad-text:#FF9DB4;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#0E0D28; --bg:#17153A; --surface:#232156; --ink:#F2F0FF; --ink2:#B0ADDC; --line:#36337C;
+  --brand-d:#3A3AC9; --brand-soft:#2E2D75; --brand-text:#B4B4FF;
+  --sun-soft:#4C4113; --mint-soft:#134639; --coral-soft:#52233A; --lav-soft:#3F2D78;
+  --lock:#3B3879; --lock-d:#292659;
+  --ok-text:#6BF0C7; --bad-text:#FF9DB4;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{height:100%;margin:0;background:var(--page);color:var(--ink);font-family:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;margin:0}
+
+#shell{position:relative;height:100%;max-width:440px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+@media (min-width:480px) and (max-width:859px){#shell{box-shadow:0 0 0 1px var(--line),0 24px 60px rgba(34,32,74,.2)}}
+
+/* desktop / wide browser layout: sidebar nav + centered content column, instead of a phone card */
+@media (min-width:860px){
+  html,body{background:var(--page)}
+  #shell{
+    max-width:1180px;height:100vh;margin:0 auto;overflow:visible;
+    display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:auto 1fr;
+    grid-template-areas:"top top" "nav main";
+    box-shadow:none;border-left:1px solid var(--line);border-right:1px solid var(--line);background:var(--bg);
+  }
+  .top{grid-area:top;padding:10px 28px}
+  .brand{font-size:28px}
+  .main{grid-area:main;padding:32px 40px 60px;justify-self:stretch}
+  .main>*{max-width:640px;margin-left:auto;margin-right:auto}
+  .main .trk,.main .unit,.main .unit-mini,.main .path,.main .soon,.main .ph,.main .sub,.main .card,.main .tiles,.main .seg,.main .plan,.main .foot{max-width:640px}
+  .nav{
+    grid-area:nav;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:4px;
+    border-top:0;border-right:2px solid var(--line);padding:18px 14px;background:var(--surface)
+  }
+  .nav button{flex-direction:row;justify-content:flex-start;gap:12px;padding:0 14px;min-height:52px;border-radius:14px;font-size:16px}
+  .nav .ico{width:26px;height:26px}
+  .nav button:hover{background:var(--brand-soft)}
+  .nav button[aria-current="page"]{background:var(--brand-soft)}
+  .l-body>*,.l-foot>*{max-width:640px;margin-left:auto;margin-right:auto}
+  .l-body{padding:24px 40px 32px}
+  .l-top{padding:16px 40px 10px;display:grid;grid-template-columns:40px minmax(0,640px) 60px;justify-content:center;column-gap:16px}
+  .l-top>.bar{margin:0}
+  .l-foot{padding:18px 40px 22px}
+  .scrim{align-items:center;justify-content:center}
+  .sheet{max-width:420px;border-radius:24px}
+}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;padding:6px 10px 6px 16px;background:var(--surface);border-bottom:2px solid var(--line);flex:none}
+.brand{display:flex;align-items:center;gap:8px;font:700 26px 'Fredoka',sans-serif;color:var(--brand-text);letter-spacing:-.01em}
+.stats{display:flex;gap:2px}
+.pill{display:flex;align-items:center;gap:5px;border:0;background:transparent;font:600 17px 'Fredoka',sans-serif;color:var(--ink);padding:0 8px;min-height:44px;border-radius:12px}
+
+.main{flex:1;overflow-y:auto;padding:18px 16px 28px}
+
+/* nav */
+.nav{display:flex;background:var(--surface);border-top:2px solid var(--line);flex:none}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 8px;border:0;background:transparent;font:600 13px 'Fredoka',sans-serif;color:var(--ink2);min-height:58px}
+.nav .ico{display:grid;place-items:center;width:44px;height:28px;border-radius:12px}
+.nav button[aria-current="page"]{color:var(--brand-text)}
+.nav button[aria-current="page"] .ico{background:var(--brand-soft)}
+
+/* home */
+.unit-mini{display:flex;gap:12px;align-items:center;background:var(--surface);border:2px solid var(--line);border-radius:18px;padding:12px 14px;margin-bottom:18px}
+.unit-mini .badge{width:36px;height:36px;border-radius:50%;background:var(--mint);color:var(--ink);display:grid;place-items:center;flex:none}
+.unit-mini h3{font:600 17px 'Fredoka',sans-serif}
+.unit-mini p{margin:0;font-size:14px;color:var(--ink2)}
+.unit{border-radius:20px;padding:16px 18px;color:#fff;background:var(--brand);box-shadow:0 5px 0 var(--brand-d);margin-bottom:26px}
+.unit h2{font:600 21px 'Fredoka',sans-serif;margin:0 0 2px}
+.unit p{margin:0;font-size:14.5px;opacity:.95}
+.unit.pro{width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--surface);color:var(--ink);border:2px solid var(--line);box-shadow:0 5px 0 var(--line);margin-bottom:22px}
+.unit.pro p{color:var(--ink2)}
+.tag{display:inline-flex;align-items:center;gap:5px;background:var(--sun);color:var(--ink);font:700 14px 'Fredoka',sans-serif;border-radius:99px;padding:5px 11px;flex:none}
+.path{display:flex;flex-direction:column;align-items:center;gap:20px;margin:0 0 30px}
+.step{position:relative;display:flex;flex-direction:column;align-items:center;gap:9px;translate:var(--dx,0px) 0}
+.step.current{margin-top:34px}
+.node{width:76px;height:76px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--c);box-shadow:0 6px 0 var(--cd);color:var(--ink);transition:translate .08s,box-shadow .08s}
+.node:active{translate:0 4px;box-shadow:0 2px 0 var(--cd)}
+.node.done{--c:var(--mint);--cd:var(--mint-d)}
+.node.current{--c:var(--sun);--cd:var(--sun-d);width:88px;height:88px}
+.node.locked{--c:var(--lock);--cd:var(--lock-d);color:var(--ink2)}
+.lbl{font:600 15px 'Fredoka',sans-serif;color:var(--ink2);max-width:160px;text-align:center}
+.step.current .lbl{color:var(--ink)}
+.bubble{position:absolute;top:-38px;left:50%;translate:-50% 0;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:3px 14px;font:700 15px 'Fredoka',sans-serif;color:var(--brand-text);animation:bob 1.6s ease-in-out infinite}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-8px;width:12px;height:12px;background:var(--surface);border-right:2px solid var(--line);border-bottom:2px solid var(--line);transform:translateX(-50%) rotate(45deg)}
+@keyframes bob{50%{translate:-50% -4px}}
+.soon{font-size:14px;color:var(--ink2);text-align:center;margin:8px 0 0}
+
+/* buttons */
+.btn{display:block;width:100%;min-height:52px;border:0;border-radius:16px;font:600 17px 'Fredoka',sans-serif;letter-spacing:.01em;background:var(--c,var(--mint));color:var(--t,var(--ink));box-shadow:0 5px 0 var(--cd,var(--mint-d));transition:transform .08s,box-shadow .08s;padding:0 18px}
+.btn:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--cd,var(--mint-d))}
+.btn.brand{--c:var(--brand);--cd:var(--brand-d);--t:#fff}
+.btn.sun{--c:var(--sun);--cd:var(--sun-d)}
+.btn.coral{--c:var(--coral);--cd:var(--coral-d)}
+.btn.ghost{--c:transparent;--cd:transparent;--t:var(--brand-text);box-shadow:none}
+.btn.ghost:active:not(:disabled){transform:none}
+.btn:disabled{--c:var(--lock);--cd:var(--lock-d);--t:var(--ink2);cursor:not-allowed}
+
+/* lesson */
+.lesson{position:absolute;inset:0;background:var(--bg);display:flex;flex-direction:column;z-index:20}
+.l-top{display:flex;align-items:center;gap:10px;padding:10px 14px 8px;flex:none}
+.x{width:44px;height:44px;border:0;background:transparent;border-radius:12px;display:grid;place-items:center;color:var(--ink2);flex:none}
+.bar{flex:1;height:16px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--mint);border-radius:99px;transition:width .35s}
+.hp{display:flex;align-items:center;gap:4px;font:600 18px 'Fredoka',sans-serif;min-width:52px;justify-content:flex-end}
+.l-body{flex:1;overflow-y:auto;padding:8px 18px 22px}
+.l-foot{padding:14px 16px 16px;border-top:2px solid var(--line);background:var(--surface);flex:none}
+.l-foot.ok{background:var(--mint-soft);border-top-color:var(--mint)}
+.l-foot.bad{background:var(--coral-soft);border-top-color:var(--coral)}
+.fb{font:700 22px 'Fredoka',sans-serif;margin-bottom:2px}
+.fb.ok{color:var(--ok-text)} .fb.bad{color:var(--bad-text)}
+.why{margin:0 0 14px;font-size:15.5px}
+.stack{display:grid;gap:12px}
+.say{display:flex;gap:12px;align-items:flex-start;margin:4px 0 18px}
+.say svg{flex:none}
+.bub{position:relative;background:var(--surface);border:2px solid var(--line);border-radius:16px;padding:12px 14px;font-size:16px}
+.bub::before{content:"";position:absolute;left:-8px;top:22px;width:14px;height:14px;background:var(--surface);border-left:2px solid var(--line);border-bottom:2px solid var(--line);transform:rotate(45deg)}
+.q{font:600 25px/1.2 'Fredoka',sans-serif;margin:8px 0 18px}
+.opt{display:flex;align-items:center;width:100%;text-align:left;padding:14px 16px;min-height:56px;border-radius:16px;border:2px solid var(--line);background:var(--surface);box-shadow:0 3px 0 var(--line);font:500 16.5px 'Figtree',sans-serif;color:var(--ink);margin-bottom:12px}
+.opt[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);box-shadow:0 3px 0 var(--brand)}
+.opt.right{border-color:var(--mint-d);background:var(--mint-soft);box-shadow:0 3px 0 var(--mint-d)}
+.opt.wrong{border-color:var(--coral-d);background:var(--coral-soft);box-shadow:0 3px 0 var(--coral-d)}
+.opt:disabled{cursor:default}
+.field{display:block;width:100%;border:2px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:500 18px 'Figtree',sans-serif;padding:12px 14px;resize:none}
+.tokens{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 8px;min-height:46px}
+.tok{padding:6px 9px;border-radius:10px;font:500 17px 'Figtree',sans-serif;white-space:pre;color:var(--ink);box-shadow:inset 0 -3px 0 rgba(34,32,74,.14)}
+.t0{background:var(--brand-soft)} .t1{background:var(--sun-soft)} .t2{background:var(--mint-soft)} .t3{background:var(--coral-soft)} .t4{background:var(--lav-soft)}
+.empty{color:var(--ink2);font-size:15px}
+.count{font:600 17px 'Fredoka',sans-serif}
+.fine{font-size:13.5px;color:var(--ink2);margin:8px 0 0}
+.sent{font:600 22px/1.3 'Fredoka',sans-serif;margin:4px 0 6px}
+.blank{display:inline-block;min-width:110px;text-align:center;border-bottom:4px solid var(--brand);color:var(--brand-text)}
+.bars{display:grid;gap:9px;margin:14px 0 10px}
+.brow{display:grid;grid-template-columns:92px 1fr 42px;align-items:center;gap:8px;font-size:15px}
+.track{height:18px;border-radius:9px;background:var(--line);overflow:hidden}
+.track i{display:block;height:100%;background:var(--brand);border-radius:9px;transition:width .2s}
+.pc{text-align:right;font:600 15px 'Fredoka',sans-serif}
+.range{margin:8px 0 14px}
+.range label{font:600 17px 'Fredoka',sans-serif}
+.range input{display:block;width:100%;height:44px;accent-color:var(--brand)}
+.ends{display:flex;justify-content:space-between;font-size:14px;color:var(--ink2)}
+.hist{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;min-height:36px}
+.hist span{background:var(--surface);border:2px solid var(--line);border-radius:99px;padding:3px 12px;font-size:15px}
+.ans{display:flex;flex-direction:column;gap:8px;min-height:120px;border-radius:16px;border:2px dashed var(--lock-d);padding:10px}
+.ans .hintline{color:var(--ink2);font-size:15px;margin:auto;text-align:center}
+.bank{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.chip{display:flex;gap:10px;align-items:center;text-align:left;padding:11px 14px;min-height:50px;border-radius:14px;border:2px solid var(--line);background:var(--surface);box-shadow:0 3px 0 var(--line);font:500 16px 'Figtree',sans-serif;width:100%;color:var(--ink)}
+.chip .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font:600 14px 'Fredoka',sans-serif}
+.chip.right{border-color:var(--mint-d);background:var(--mint-soft)}
+.chip.wrong{border-color:var(--coral-d);background:var(--coral-soft)}
+.chip:disabled{cursor:default}
+.done{position:relative;text-align:center;padding-top:6px}
+.done h1{font:700 30px 'Fredoka',sans-serif;margin:10px 0 6px}
+.done p{margin:0 auto;max-width:300px;color:var(--ink2)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0 8px}
+.tile{border:2px solid var(--c);border-radius:16px;background:var(--surface);overflow:hidden;text-align:center}
+.tile b{display:block;background:var(--c);color:var(--ink);font:600 13px 'Fredoka',sans-serif;padding:4px}
+.tile span{display:block;font:700 26px 'Fredoka',sans-serif;padding:12px 4px}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:30}
+.confetti span{position:absolute;top:-18px;width:9px;height:14px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(560deg)}}
+
+/* leagues + plans */
+.ph{font:700 28px 'Fredoka',sans-serif;margin-bottom:4px}
+.sub{margin:0 0 16px;color:var(--ink2)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--line);padding:5px;border-radius:16px;margin-bottom:18px}
+.seg button{border:0;background:transparent;min-height:44px;border-radius:12px;font:600 16px 'Fredoka',sans-serif;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 2px 0 rgba(34,32,74,.12)}
+.seg em{font-style:normal;font-size:13px;background:var(--mint);color:var(--ink);border-radius:99px;padding:1px 8px;margin-left:4px}
+.plan{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:18px;margin-bottom:18px}
+.plan.pro{border-color:var(--brand);box-shadow:0 5px 0 var(--brand)}
+.plan h2{font:600 22px 'Fredoka',sans-serif}
+.price{font:700 36px 'Fredoka',sans-serif;line-height:1.1;margin-top:4px}
+.per{font:500 16px 'Figtree',sans-serif;color:var(--ink2)}
+.plan .note{margin:2px 0 0;font-size:14px;color:var(--ink2)}
+.plan ul{list-style:none;padding:0;margin:14px 0 16px;display:grid;gap:9px}
+.plan li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px}
+.plan li svg{flex:none;margin-top:3px;color:var(--mint-d)}
+.foot{font-size:13.5px;color:var(--ink2);text-align:center}
+
+/* modal + toast */
+.scrim{position:absolute;inset:0;background:rgba(14,13,40,.6);display:flex;align-items:flex-end;z-index:40}
+.sheet{width:100%;background:var(--surface);border-radius:24px 24px 0 0;padding:22px 20px 22px}
+.sheet h2{font:600 24px 'Fredoka',sans-serif;margin-bottom:6px}
+.sheet p{margin:0 0 18px;color:var(--ink2)}
+.toast{position:absolute;left:16px;right:16px;bottom:82px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 16px;font-weight:600;text-align:center;z-index:60}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  .confetti{display:none}
+}
+
+/* ---- engine additions ---- */
+button.unit,button.unit-mini{width:100%;text-align:left;font-family:inherit;cursor:pointer}
+button.unit{border:0}
+button.unit-mini{color:var(--ink)}
+.unit.c-mint{background:var(--mint);box-shadow:0 5px 0 var(--mint-d);color:var(--ink)}
+.unit.c-coral{background:var(--coral);box-shadow:0 5px 0 var(--coral-d);color:var(--ink)}
+.unit.c-sun{background:var(--sun);box-shadow:0 5px 0 var(--sun-d);color:var(--ink)}
+.trk{font:700 22px 'Fredoka',sans-serif;margin:8px 0 14px}
+.pts{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:8px}
+.pts li{background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 14px;font-size:15.5px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;background:var(--brand-soft);padding:1px 5px;border-radius:6px}
+.cor{font:600 17px 'Fredoka',sans-serif;margin:18px 0 8px;color:var(--ink2)}
+.mcols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mcol{display:grid;gap:10px;align-content:start}
+.mbtn{display:flex;gap:8px;align-items:center;text-align:left;padding:11px 12px;min-height:62px;border-radius:14px;border:2px solid var(--line);background:var(--surface);box-shadow:0 3px 0 var(--line);font:500 15px 'Figtree',sans-serif;color:var(--ink);width:100%}
+.mbtn[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft);box-shadow:0 3px 0 var(--brand)}
+.mbtn .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font:600 13px 'Fredoka',sans-serif}
+.mbtn.right{border-color:var(--mint-d);background:var(--mint-soft);box-shadow:0 3px 0 var(--mint-d)}
+.mbtn.wrong{border-color:var(--coral-d);background:var(--coral-soft);box-shadow:0 3px 0 var(--coral-d)}
+.mbtn:disabled{cursor:default}
+.nav .ico{position:relative}
+.nav .dot{position:absolute;top:-6px;right:-2px;min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:var(--coral);color:var(--ink);font:700 12px 'Fredoka',sans-serif;display:grid;place-items:center}
+.card{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:20px;text-align:center;margin-bottom:18px}
+.card h2{font:600 22px 'Fredoka',sans-serif;margin:8px 0 4px}
+.card p{margin:0 0 16px;color:var(--ink2)}
+.tiles.solo{margin-top:0}
+
+</style>
+</head>
+<body>
+<div id="shell"><p style="padding:24px">Loading…</p></div>
+<div id="live" class="sr" aria-live="polite"></div>
+<script>window.__CONTENT__={"config":{"name":"Nibble","tagline":"AI in bite-size lessons","storageKey":"nibble.v1","demo":true,"hearts":{"max":5,"regenMinutes":30},"xp":{"lesson":15,"replay":5,"practice":5,"perfectBonus":5},"billing":{"yearlySavings":"33%"},"plans":[{"id":"free","name":"Free","note":"Enough to build a real habit","price":{"month":"$0","year":"$0"},"per":{"month":"","year":""},"sub":{"month":"","year":""},"features":["Units 1 and 2: AI basics and How LLMs work","A daily lesson and streaks","5 hearts that refill over time","Practice mode for missed questions"],"cta":"Current plan"},{"id":"pro","name":"Pro","highlight":true,"note":{"month":"Cancel anytime","year":"About $6.67 a month"},"price":{"month":"$10","year":"$80"},"per":{"month":" a month","year":" a year"},"features":["Every track, with new lessons each week","Unlimited hearts","AI tutor that explains it another way","Shareable certificates","Offline lessons"],"cta":"Try Pro free for 7 days"},{"id":"teams","name":"Teams","note":"For companies upskilling on AI","price":{"month":"$12","year":"$12"},"per":{"month":" per seat a month","year":" per seat a month"},"features":["Everything in Pro","Manager dashboard and completion reports","Custom tracks for your industry, such as GxP, healthcare or finance","Single sign-on"],"cta":"Talk to us","cls":"sun"}],"plansNote":"Prices are placeholders for testing. Checkout isn't connected."},"course":{"tracks":[{"id":"foundations","title":"Foundations","units":[{"id":"ai-basics","title":"AI basics","blurb":"What AI is, and what it isn't","color":"brand","tier":"free","lessons":["what-is-ai","ai-ml-llm","what-ai-cant-do"]},{"id":"how-llms-work","title":"How LLMs work","blurb":"Tokens, temperature, context, and why models make things up","color":"mint","tier":"free","lessons":["how-an-llm-answers","context-windows","why-models-make-things-up"]},{"id":"prompting","title":"Prompting","blurb":"Write prompts that get better answers","color":"coral","tier":"free","lessons":["prompt-basics"]},{"id":"agents","title":"Agents and tools","blurb":"Let models take actions, safely","color":"sun","tier":"free","lessons":["what-is-an-agent","the-agent-loop","agent-guardrails"]}]},{"id":"for-leaders","title":"For leaders","units":[{"id":"leading-ai","title":"Leading AI work","blurb":"What to ask before you fund, build or govern an AI project","color":"mint","tier":"free","lessons":["why-ai-matters-for-leaders","build-buy-or-partner","ai-risk-and-governance"]}]}]},"lessons":{"what-is-ai":{"id":"what-is-ai","title":"What is AI?","cards":[{"id":"c1","type":"concept","say":"**AI** is software that handles tasks we usually think need human judgment, like spotting a face in a photo, translating a sentence, or drafting an email."},{"id":"c2","type":"mc","q":"Which of these is a typical AI task?","options":["Adding two numbers","Displaying today's date","Sorting photos by who appears in them","Copying a file"],"answer":2,"why":"Recognizing people in photos means finding patterns in messy data, which is where AI shines. The others follow fixed rules."},{"id":"c3","type":"match","q":"Match each tool to what it does","pairs":[["Spam filter","Sorts email into junk and not junk"],["Navigation app","Predicts travel time from traffic patterns"],["Voice assistant","Turns speech into text, then acts on it"],["Chatbot","Writes a reply to your message"]],"why":"Each one learns patterns from data instead of following a hand-written rule for every case."},{"id":"c4","type":"mc","q":"Myth or fact: AI understands the world the way a person does.","options":["Fact","Myth"],"answer":1,"why":"Today's AI finds patterns in data. It can be very useful without experiencing or understanding things the way a person does."},{"id":"c5","type":"fill","before":"AI systems learn","after":"from examples instead of relying only on hand-written rules.","options":["patterns","passwords","furniture"],"answer":0,"why":"Learning patterns from lots of examples is the core idea behind machine learning."}]},"ai-ml-llm":{"id":"ai-ml-llm","title":"AI, ML and LLMs","cards":[{"id":"c1","type":"concept","say":"Picture three circles, one inside the next. **AI** is the big idea. **Machine learning (ML)** is AI that learns from data. **LLMs** are ML models trained on huge amounts of text."},{"id":"c2","type":"order","q":"Order them from broadest to narrowest","steps":["Artificial intelligence","Machine learning","Large language models"],"why":"AI is the whole field, ML is one way to build it, and LLMs are one kind of ML model."},{"id":"c3","type":"mc","q":"What does \"large\" in large language model mostly refer to?","options":["The size of the screen it runs on","How long its answers are","The size of the model and the amount of text it learned from","How many languages it speaks"],"answer":2,"why":"Large means scale: a huge number of adjustable values (parameters) and a huge amount of training text."},{"id":"c4","type":"match","q":"Match the term to its meaning","pairs":[["Model","The trained program that makes predictions"],["Training","Adjusting the model using many examples"],["Prompt","The input you give the model"],["Parameter","One adjustable number inside the model"]],"why":"You train a model on data, then prompt it to get predictions."},{"id":"c5","type":"spot","q":"One statement is wrong. Tap it.","sentences":["Machine learning is one way to build AI.","An LLM is a kind of machine learning model.","Every AI system is an LLM."],"answer":2,"why":"LLMs are one type of AI. Image recognizers, recommendation engines and many other systems are AI too, and most are not LLMs."}]},"what-ai-cant-do":{"id":"what-ai-cant-do","title":"What AI can't do","cards":[{"id":"c1","type":"concept","say":"AI is fast and great with patterns. It is weaker at knowing when it's wrong. Good users understand both sides.","points":["Strong at: drafting, summarizing, sorting, spotting patterns","Weak at: exact facts on demand, events after its training data, admitting what it doesn't know"]},{"id":"c2","type":"mc","q":"An assistant gives a confident answer with no source. What should you do before relying on it?","options":["Trust it, since it sounded sure","Ask the same question louder","Check it against a source you trust"],"answer":2,"why":"Confidence isn't evidence. Models can state wrong things fluently, so verify anything that matters."},{"id":"c3","type":"mc","q":"Myth or fact: an LLM always knows today's news.","options":["Myth","Fact"],"answer":0,"why":"A model only knows what was in its training data, which stops at some date. Tools like web search can add fresh information."},{"id":"c4","type":"mc","q":"Which job is riskiest to hand to an AI with no human check?","options":["Drafting a first reply to an email","Brainstorming names for a project","Summarizing an article you will also skim","Working out a patient's medication dose"],"answer":3,"why":"When a wrong answer can cause real harm, a person must verify. Low-stakes drafting is where AI helps most."},{"id":"c5","type":"order","q":"Put a safe AI workflow in order","steps":["Ask the AI for a draft","Check the facts that matter","Fix anything wrong or unclear","Send it under your own name"],"why":"You stay accountable. The AI drafts, and you verify and decide."},{"id":"c6","type":"fill","before":"AI works best as an","after":"to your judgment, not a replacement for it.","options":["oracle","authority","assistant"],"answer":2,"why":"Use AI to speed up your work, and keep the final call yourself."}]},"how-an-llm-answers":{"id":"how-an-llm-answers","title":"How an LLM answers","cards":[{"id":"c1","type":"widget","widget":"tokenizer","say":"LLMs don't read words. They read **tokens**, small chunks of text. Type below and watch your text split.","props":{"text":"Unbelievably helpful assistants","note":"This is a simplified splitter. Real tokenizers differ, but long and rare words do break into more pieces."}},{"id":"c2","type":"mc","q":"What does an LLM actually predict?","options":["The next token","The truth","What you meant to ask","A row in a database"],"answer":0,"why":"It predicts the most likely next token, adds it, and repeats. Every fluent answer comes from that loop."},{"id":"c3","type":"widget","widget":"temperature","say":"At every step the model weighs candidate tokens. **Temperature** decides how boldly it picks. Slide it, then sample a few times.","props":{"prompt":"The best pizza topping is","button":"Pick a topping","options":[["pepperoni",0.5],["mushroom",0.2],["basil",0.12],["pineapple",0.1],["anchovies",0.06],["a rocket",0.02]]}},{"id":"c4","type":"mc","q":"You want a contract summary that is steady and repeatable. Which temperature?","options":["It makes no difference","Low, near 0.2","High, near 1.8"],"answer":1,"why":"Low temperature lets the top choice win almost every time, so the same input gives nearly the same output."},{"id":"c5","type":"spot","q":"One sentence in this AI answer is invented. Tap it.","sentences":["Photosynthesis turns light, water and carbon dioxide into sugar and oxygen.","It happens mostly in the chloroplasts of leaf cells.","A 2017 Harvard study by Dr. Elena Marsh proved plants can photosynthesize in total darkness."],"answer":2,"why":"A name, a year and an institution make it sound solid, but nothing here can be verified, and it contradicts how photosynthesis works. Hallucinations often arrive as confident specifics."},{"id":"c6","type":"order","q":"Put the steps in order","steps":["Your prompt is split into tokens","The model scores every possible next token","One token is picked, guided by temperature","The token is added and the loop repeats"],"why":"Split, score, pick, repeat. Each new token becomes part of the input for the next one."}]},"context-windows":{"id":"context-windows","title":"Context windows","cards":[{"id":"c1","type":"concept","say":"A **context window** is how much text the model can consider at once: your prompt, the chat so far, and its reply so far. Text outside the window is invisible to it."},{"id":"c2","type":"mc","q":"A long chat goes on and the assistant forgets a detail from the start. What's the likely cause?","options":["The early text no longer fits in the context window","The model got tired","The model chose to ignore you"],"answer":0,"why":"The model can only work with what fits in its window. Very long chats may push early messages out or get summarized, so details can be lost."},{"id":"c3","type":"mc","q":"Which of these usually counts toward the context window?","options":["Only your latest question","Your prompt and the reply so far","Only the model's reply"],"answer":1,"why":"The window holds both the input and the output, measured in tokens."},{"id":"c4","type":"spot","q":"One tip is bad advice. Tap it.","sentences":["Put your key instruction clearly, and repeat it near the end.","Give only the sections of a document that matter.","Paste 500 pages and expect every detail to get equal attention."],"answer":2,"why":"Models can miss details in very long inputs. Short, focused context usually gives better answers."},{"id":"c5","type":"match","q":"Match each problem to a fix","pairs":[["The chat has grown very long","Start fresh with a short summary"],["You need answers from a huge report","Share only the relevant sections"],["The model keeps ignoring a rule","Restate the rule clearly near the end"]],"why":"Every fix comes down to giving the model less, and more relevant, text."}]},"why-models-make-things-up":{"id":"why-models-make-things-up","title":"Why models make things up","cards":[{"id":"c1","type":"concept","say":"An LLM is built to produce text that is **likely**, not text that is **true**. When it doesn't know, it can still write a fluent guess. That's called a **hallucination**."},{"id":"c2","type":"mc","q":"Why can a model invent a source that looks real?","options":["It wants to trick you","It writes plausible-sounding text rather than looking facts up","Its database has typos"],"answer":1,"why":"It predicts likely-looking text. A citation-shaped string is likely, whether or not the paper exists."},{"id":"c3","type":"spot","q":"Tap the red flag.","sentences":["The answer explains the idea in plain language.","The answer cites a very specific paper you can't find anywhere.","The answer says it's unsure and suggests checking a primary source."],"answer":1,"why":"Precise-looking details you can't verify are a classic hallucination sign. Hedging and pointing to sources are healthier signs."},{"id":"c4","type":"mc","q":"Which habit most reduces made-up answers?","options":["Ask for a longer answer","Give it the source text and ask it to answer from that","Ask the same question more forcefully"],"answer":1,"why":"Grounding the answer in text you provide gives the model facts to work from instead of guessing. This is the idea behind RAG."},{"id":"c5","type":"fill","before":"When it doesn't know, a model may write a fluent","after":"instead of saying so.","options":["guess","apology","backup"],"answer":0,"why":"Fluent doesn't mean correct. Treat confident answers as claims to check."}]},"prompt-basics":{"id":"prompt-basics","title":"Better prompts","cards":[{"id":"c1","type":"concept","say":"A strong prompt tells the model **what to do, for whom, and what a good result looks like**.","points":["Task: what to do","Context: what it can't guess","Format: how the answer should look"]},{"id":"c2","type":"mc","q":"Which prompt is most likely to get a useful answer?","options":["Make it good.","Write about our product.","Write a friendly 3-sentence blurb on our app for IT managers, with a call to action."],"answer":2,"why":"It names the task, audience, length, tone and ending, so the model has far less to guess."},{"id":"c3","type":"match","q":"Match each prompt part to its job","pairs":[["Role","Sets the point of view, like an editor"],["Task","Says exactly what to do"],["Context","Adds background the model can't guess"],["Format","Says how the answer should look"]],"why":"You don't need all four every time, but each one removes guesswork."},{"id":"c4","type":"fill","before":"Giving one or two examples of what you want is called","after":"prompting.","options":["few-shot","fast-shot","free-shot"],"answer":0,"why":"Few-shot prompting shows the model examples of the pattern to follow."},{"id":"c5","type":"spot","q":"Tap the habit that usually hurts results.","sentences":["Say who the answer is for.","Pack five unrelated tasks into one message.","Say what to avoid."],"answer":1,"why":"One clear task per prompt is easier to follow. Split big jobs into steps."},{"id":"c6","type":"order","q":"Improve a weak answer, in order","steps":["Read what the model got wrong","Add the missing context to your prompt","Run it again","Keep the better version"],"why":"Prompting is iterative: change one thing, compare, and keep what works."}]},"what-is-an-agent":{"id":"what-is-an-agent","title":"What is an agent?","cards":[{"id":"c1","type":"concept","say":"A chatbot answers. An **agent** can also act: it works toward a goal, chooses tools, checks results and repeats until it's done."},{"id":"c2","type":"order","q":"Put the agent loop in order","steps":["Look at the goal and what's known","Choose a tool and use it","Read the result","Decide: done, or go around again"],"why":"Look, act, read, decide. The loop repeats until the goal is met or a person steps in."},{"id":"c3","type":"match","q":"Match each tool to its job","pairs":[["Web search","Finds fresh information"],["Calculator","Does exact math"],["Database query","Looks up company records"],["Email draft","Prepares a message for a person to review"]],"why":"Tools give the model abilities it lacks on its own, like fresh data and exact math."},{"id":"c4","type":"mc","q":"An agent is able to issue refunds. Which design is safest?","options":["Let it refund anything to keep customers happy","A person approves refunds above a set amount","Hide refunds from the logs"],"answer":1,"why":"Limits and human approval for risky actions keep agents useful and safe. The costlier a mistake, the more oversight it needs."},{"id":"c5","type":"fill","before":"Rules and approvals that limit what an agent can do are called","after":".","options":["shortcuts","plugins","guardrails"],"answer":2,"why":"Guardrails define what an agent may do on its own and what needs a person."}]},"the-agent-loop":{"id":"the-agent-loop","title":"The agent loop","cards":[{"id":"c1","type":"concept","say":"A common pattern for agents is **think, act, observe**: reason about what to do, take one action, look at what happened, then repeat.","points":["Think: reason about the next step","Act: call a tool","Observe: read what came back","Repeat, or stop"]},{"id":"c2","type":"mc","q":"Right after a \"think\" step, what usually happens?","options":["The loop always ends","An action is taken based on that thought","The user approves every single thought","The model retrains itself"],"answer":1,"why":"Thinking leads to acting. The agent reasons briefly, then does one concrete thing based on that reasoning."},{"id":"c3","type":"order","q":"An agent is booking a restaurant table. Put its loop in order.","steps":["Think: check what tables are open tonight","Act: call the reservation tool","Observe: the tool returns two open times","Think: 7pm works, so book it","Act: submit the booking"],"why":"Each round of thinking leads to one action, and the result of that action feeds the next round."},{"id":"c4","type":"mc","q":"Why does an agent loop need an explicit stopping condition?","options":["To limit cost and prevent endless retries if a tool keeps failing","So it forgets what it already did","Because loops aren't allowed in most systems","To force exactly ten steps every time"],"answer":0,"why":"Without a limit, a stuck tool or a confused agent can loop forever, burning time and money. A cap or a clear goal check keeps it bounded."},{"id":"c5","type":"spot","q":"One statement about the loop is wrong. Tap it.","sentences":["An agent can call a tool more than once during one task.","Every agent loop must finish in exactly one step.","An agent can decide the goal is met and stop early."],"answer":1,"why":"The loop can take as many steps as the task needs. Forcing exactly one step would defeat the point of looping at all."},{"id":"c6","type":"fill","before":"Repeating think, act and observe until the goal is met is called the agent's","after":".","options":["loop","license","ledger"],"answer":0,"why":"This think-act-observe cycle is often called the agent loop, or the ReAct pattern in research papers."}]},"agent-guardrails":{"id":"agent-guardrails","title":"Agent guardrails","cards":[{"id":"c1","type":"concept","say":"The more an agent can do on its own, the more it can get wrong on its own. **Guardrails** are the rules that keep its actions inside a safe range."},{"id":"c2","type":"match","q":"Match each guardrail to what it limits","pairs":[["Permission scope","Which tools or data the agent can touch"],["Approval step","A person signs off before a risky action runs"],["Rate limit","How many actions it can take per minute"],["Audit log","A record of every action, for review later"]],"why":"Each guardrail limits a different kind of risk: reach, timing, speed, and accountability after the fact."},{"id":"c3","type":"mc","q":"An agent can send emails for you. What's the safest default?","options":["Let it send anything instantly","Have it draft the email and wait for your approval","Never let it touch email at all"],"answer":1,"why":"Drafting and waiting keeps the speed benefit while a person still catches mistakes before anything goes out. Blocking it entirely gives up the upside for no reason."},{"id":"c4","type":"mc","q":"Myth or fact: giving an agent broader permissions always makes it more useful.","options":["Fact","Myth"],"answer":1,"why":"Broader permissions raise capability and risk together. Scoping access to just what the task needs is usually the better trade."},{"id":"c5","type":"spot","q":"One of these habits is actually risky. Tap it.","sentences":["Start a new agent with the narrowest access it needs.","Give a brand-new agent full access on day one so nothing gets blocked.","Log every action so mistakes can be traced later."],"answer":1,"why":"Starting broad means a bug or a bad prompt can do maximum damage on day one. Start narrow, and widen access deliberately once it's earned trust."},{"id":"c6","type":"order","q":"Put a safe rollout of a new agent capability in order","steps":["Test the action in a sandbox with fake data","Add it live, but with a required human approval step","Watch real runs closely for a while","Remove the approval step once it's proven reliable"],"why":"Sandbox, then human-checked, then supervised, then autonomous. Trust is earned in stages, not assumed on day one."}]},"why-ai-matters-for-leaders":{"id":"why-ai-matters-for-leaders","title":"Why this matters for leaders","cards":[{"id":"c1","type":"concept","say":"You don't need to write code to lead AI work well. You need to know what it's actually good at, what it costs, and where the risk sits."},{"id":"c2","type":"mc","q":"Which question matters most before approving an AI project?","options":["What's the flashiest demo we can show?","What decision or task does this improve, and how will we know?","Which vendor has the biggest marketing budget?"],"answer":1,"why":"A clear, measurable improvement beats an impressive demo. If you can't state what gets better, the project isn't ready to fund."},{"id":"c3","type":"spot","q":"One line here is a red flag in a project pitch. Tap it.","sentences":["The team can name the metric this is expected to move.","The team says accuracy will \"just get better over time\", with no plan for how.","The team has a plan for what happens when the model is wrong."],"answer":1,"why":"\"It'll improve\" isn't a plan. Ask how, by when, and what happens if it doesn't."},{"id":"c4","type":"match","q":"Match the role to what it mainly brings to an AI project","pairs":[["Domain expert","Knows what a right answer actually looks like"],["Engineer","Builds and maintains the system"],["Risk or compliance owner","Decides what oversight the use case needs"],["Sponsor","Owns the budget and the outcome"]],"why":"AI projects usually stall from a missing role, not from a weak model."},{"id":"c5","type":"mc","q":"A team wants to ship an AI feature with no way to check its accuracy after launch. What's your call?","options":["Approve it, speed matters most","Ask for a way to catch errors before it ships","Cancel the project outright"],"answer":1,"why":"You don't need to block AI work to lead it responsibly, you need a way to catch problems. That's usually a small ask that saves a much larger cleanup later."},{"id":"c6","type":"fill","before":"Before funding an AI project, a leader should be able to state the","after":"it is meant to move.","options":["metric","logo","slogan"],"answer":0,"why":"If nobody can name what should move, there's no way to tell later whether the project worked."}]},"build-buy-or-partner":{"id":"build-buy-or-partner","title":"Build, buy or partner","cards":[{"id":"c1","type":"concept","say":"Most AI decisions aren't \"should we use AI\". They're **build it, buy a product, or bring in a partner**. Each trades speed, cost and control differently."},{"id":"c2","type":"match","q":"Match each option to its main trade-off","pairs":[["Buy an existing product","Fast to start, less control over the details"],["Build in-house","Most control, slowest and most expensive"],["Partner with a vendor","A middle ground: some customization, shared risk"]],"why":"None of these is always right. The best fit depends on how unique your need is and how much upkeep you can commit to."},{"id":"c3","type":"mc","q":"Which situation usually favors buying instead of building?","options":["The task is common across many companies, like scheduling or transcription","The task depends entirely on data only your company has","You want to fully control the model's behavior forever"],"answer":0,"why":"If many companies need the same thing, someone has likely already built and refined it. Building it yourself there mostly means re-inventing it, slower."},{"id":"c4","type":"mc","q":"Which situation usually favors building in-house?","options":["The workflow is core to your edge and hard to buy off the shelf","You want something running by next week","Nobody on the team has time to maintain it"],"answer":0,"why":"Build where it's central to your advantage and worth the ongoing investment. Buy where it isn't."},{"id":"c5","type":"spot","q":"One of these vendor-evaluation habits is weak. Tap it.","sentences":["Ask how the vendor handles your data and who can see it.","Pick whichever product's website lists the most features.","Ask what happens to your workflow if you switch vendors later."],"answer":1,"why":"A long feature list doesn't tell you whether it solves your actual problem. Ask about your specific use case, and about the exit."},{"id":"c6","type":"order","q":"Put a sound evaluation process in order","steps":["Define what the task actually needs to do","Compare build, buy and partner options against that","Run a small pilot with real data","Decide, based on the pilot's results"],"why":"Define the need first, or every option looks equally appealing."}]},"ai-risk-and-governance":{"id":"ai-risk-and-governance","title":"AI risk and governance","cards":[{"id":"c1","type":"concept","say":"Governance isn't about slowing AI down. It's about knowing which uses need a light touch, and which need real oversight, before something goes wrong."},{"id":"c2","type":"match","q":"Match the AI use to its rough risk level","pairs":[["Drafting an internal email","Low: a person reads it before it goes anywhere"],["Approving loan applications","High: it directly affects someone's rights"],["Summarizing your own meeting notes","Low: mistakes are cheap and easy to catch"],["Screening job candidates","High: it can systematically exclude people"]],"why":"Risk depends on what happens if it's wrong and who it affects, not on how advanced the technology is."},{"id":"c3","type":"mc","q":"Which control matters most for a high-risk use, like a hiring or lending decision?","options":["A polished user interface","A human review step and a way to audit outcomes","Using the newest model available"],"answer":1,"why":"For decisions that affect people's lives, oversight and the ability to audit outcomes matter more than raw model quality."},{"id":"c4","type":"mc","q":"Myth or fact: one AI policy document is enough to manage AI risk across a company.","options":["Myth","Fact"],"answer":0,"why":"A policy sets expectations, but risk still needs a case-by-case look, since a chatbot FAQ and an automated approval system carry very different risk."},{"id":"c5","type":"spot","q":"One of these governance habits backfires. Tap it.","sentences":["Review high-risk use cases before they launch, not after.","Route every low-risk internal draft through a formal review board.","Keep a record of what data informed each system."],"answer":1,"why":"Heavy review on low-risk work slows teams down without cutting real risk, and it teaches people to route around governance entirely. Save the heavy process for what actually needs it."},{"id":"c6","type":"fill","before":"A good governance approach matches the amount of oversight to the","after":"of the use case.","options":["risk","logo","hype"],"answer":0,"why":"Match the process to the stakes. Light review for low-stakes work, real oversight for anything that can seriously hurt someone if it's wrong."}]}}};</script>
+<script>
+/* Nibble engine. All content comes from /content JSON (see docs/CONTENT-GUIDE.md).
+   Nothing in this file should need editing to add lessons, units or plans. */
+(function () {
+'use strict';
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
+const CHECKABLE = ['mc', 'fill', 'spot', 'order', 'match'];
+
+let CFG, C, LES, P, KEY;
+const S = { tab: 'learn', modal: null, lesson: false, rs: false, open: {}, billing: 'year' };
+let L = null;
+
+/* ---------- content loading ---------- */
+async function load() {
+  if (window.__CONTENT__) return window.__CONTENT__;
+  const j = async (p) => { const r = await fetch(p); if (!r.ok) throw new Error(p + ' returned ' + r.status); return r.json(); };
+  const config = await j('content/config.json');
+  const course = await j('content/course.json');
+  const ids = [];
+  course.tracks.forEach((t) => t.units.forEach((u) => u.lessons.forEach((id) => ids.push(id))));
+  const lessons = {};
+  await Promise.all(ids.map(async (id) => { lessons[id] = await j('content/lessons/' + id + '.json'); }));
+  return { config, course, lessons };
+}
+
+/* ---------- progress (localStorage, with in-memory fallback) ---------- */
+const mem = {};
+const store = {
+  get(k) { try { const v = localStorage.getItem(k); if (v) return JSON.parse(v); } catch (e) { /* storage unavailable */ } return mem[k] || null; },
+  set(k, v) { mem[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } }
+};
+const now = () => Date.now();
+const fresh = () => ({ xp: 0, streak: 0, lastDay: null, hearts: CFG.hearts.max, heartsAt: now(), done: {}, missed: [], pro: false });
+const save = () => store.set(KEY, P);
+function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function yesterdayKey() { const d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
+const streakNow = () => (P.lastDay === dayKey() || P.lastDay === yesterdayKey() ? P.streak : 0);
+function touchStreak() {
+  const t = dayKey();
+  if (P.lastDay === t) return;
+  P.streak = P.lastDay === yesterdayKey() ? P.streak + 1 : 1;
+  P.lastDay = t;
+}
+function regen() {
+  if (P.pro) return;
+  const max = CFG.hearts.max, ms = CFG.hearts.regenMinutes * 60000;
+  if (P.hearts >= max) { P.hearts = max; P.heartsAt = now(); return; }
+  const g = Math.floor((now() - P.heartsAt) / ms);
+  if (g > 0) { P.hearts = Math.min(max, P.hearts + g); P.heartsAt = P.hearts >= max ? now() : P.heartsAt + g * ms; }
+}
+function loseHeart() {
+  if (P.pro) return;
+  if (P.hearts >= CFG.hearts.max) P.heartsAt = now();
+  P.hearts = Math.max(0, P.hearts - 1);
+}
+const heartWait = () => Math.max(1, Math.ceil((P.heartsAt + CFG.hearts.regenMinutes * 60000 - now()) / 60000));
+
+/* ---------- course helpers ---------- */
+function flat() {
+  const out = [];
+  C.tracks.forEach((t) => t.units.forEach((u) => u.lessons.forEach((id) => out.push({ id, unit: u, track: t }))));
+  return out;
+}
+function lessonStates() {
+  let allPrev = true;
+  const map = {};
+  flat().forEach((x) => {
+    const done = !!P.done[x.id];
+    const proLock = x.unit.tier === 'pro' && !P.pro;
+    let st;
+    if (proLock) st = 'pro'; else if (done) st = 'done'; else if (allPrev) st = 'current'; else st = 'locked';
+    if (!done) allPrev = false;
+    map[x.id] = st;
+  });
+  return map;
+}
+
+/* ---------- icons + mascot ---------- */
+const ic = {
+  flame: (s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF8A3D" d="M12 2c1 3.6 5.3 5.6 5.3 10.2A5.3 5.3 0 0 1 6.7 12.2c0-2 .9-3.3 2.1-4.4.2 1.5.9 2.2 1.8 2.4C10.2 7.6 10.5 4.6 12 2z"/></svg>`,
+  bolt: (s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFB800" d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>`,
+  heart: (s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FF4F75" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+  lock: (s = 26) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="3" fill="currentColor"/><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>`,
+  check: (s = 26) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  star: (s = 36) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`,
+  x: (s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
+  home: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg>`,
+  loop: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M20.5 3.5v5.5H15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  gem: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z" fill="currentColor"/></svg>`
+};
+function mascot(size, mood) {
+  mood = mood || 'happy';
+  const eyes = mood === 'cheer'
+    ? '<path d="M32 60q11-14 22 0M66 60q11-14 22 0" fill="none" stroke="#22204A" stroke-width="5" stroke-linecap="round"/>'
+    : `<circle cx="44" cy="60" r="13" fill="#fff"/><circle cx="76" cy="60" r="13" fill="#fff"/>
+       <circle cx="${mood === 'sad' ? 45 : 46}" cy="${mood === 'sad' ? 65 : 62}" r="6.5" fill="#22204A"/><circle cx="${mood === 'sad' ? 77 : 78}" cy="${mood === 'sad' ? 65 : 62}" r="6.5" fill="#22204A"/>
+       <circle cx="48" cy="59" r="2" fill="#fff"/><circle cx="80" cy="59" r="2" fill="#fff"/>`;
+  const mouth = mood === 'cheer'
+    ? '<path d="M46 80q14 24 28 0z" fill="#22204A"/><path d="M53 89q7 6 14 0q-7-3-14 0z" fill="#FF7391"/>'
+    : mood === 'sad'
+      ? '<path d="M51 91q9-9 18 0" fill="none" stroke="#22204A" stroke-width="4.5" stroke-linecap="round"/>'
+      : '<path d="M50 82q10 10 20 0" fill="none" stroke="#22204A" stroke-width="4.5" stroke-linecap="round"/>';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M42 26L36 10M78 26l6-16" stroke="#3A3AC9" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="35" cy="8" r="6" fill="#FFC93C"/><circle cx="85" cy="8" r="6" fill="#FFC93C"/>
+    <rect x="14" y="24" width="92" height="84" rx="34" fill="#5B5BFF"/>
+    <path d="M30 46q4-14 20-16" stroke="#fff" stroke-opacity=".45" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="27" cy="80" rx="8" ry="5" fill="#FF7391" opacity=".7"/><ellipse cx="93" cy="80" rx="8" ry="5" fill="#FF7391" opacity=".7"/>
+    ${eyes}${mouth}</svg>`;
+}
+
+/* ---------- seeded shuffle (same order every time for a given card) ---------- */
+function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function shuffled(n, seed) {
+  const a = [...Array(n).keys()];
+  let r = hash(seed) || 1;
+  const rnd = () => { r ^= r << 13; r >>>= 0; r ^= r >>> 17; r ^= r << 5; r >>>= 0; return r / 4294967296; };
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  if (a.every((v, i) => v === i)) a.push(a.shift());
+  return a;
+}
+
+/* ---------- widgets (interactive cards). Add new ones here, then list the name in tools/validate.mjs ---------- */
+const PRE = ['inter', 'over', 'dis', 'mis', 'non', 'pre', 'un', 're'];
+const SUF = ['ization', 'ation', 'ibly', 'ably', 'able', 'ible', 'ingly', 'ness', 'ment', 'ing', 'ally', 'ly', 'ed', 'er', 'es', 's'];
+function splitWord(w) {
+  let head = '', tail = '', mid = w;
+  for (const p of PRE) if (mid.toLowerCase().startsWith(p) && mid.length > p.length + 3) { head = mid.slice(0, p.length); mid = mid.slice(p.length); break; }
+  for (const s of SUF) if (mid.toLowerCase().endsWith(s) && mid.length > s.length + 2) { tail = mid.slice(mid.length - s.length); mid = mid.slice(0, mid.length - s.length); break; }
+  const out = [];
+  if (head) out.push(head);
+  if (mid.length > 8) { const h = Math.ceil(mid.length / 2); out.push(mid.slice(0, h), mid.slice(h)); } else out.push(mid);
+  if (tail) out.push(tail);
+  return out;
+}
+function tokenize(text) {
+  const out = []; const re = /\s?[A-Za-z]+|\s?\d+|\s?[^\sA-Za-z\d]/g; let m;
+  while ((m = re.exec(text))) {
+    const raw = m[0], lead = /^\s/.test(raw) ? ' ' : '', w = raw.trim();
+    if (/^[A-Za-z]{8,}$/.test(w)) { const p = splitWord(w); p[0] = lead + p[0]; out.push(...p); } else out.push(raw);
+  }
+  return out;
+}
+const tokChips = (t) => { const k = tokenize(t); return k.length ? k.map((x, i) => `<span class="tok t${i % 5}">${esc(x)}</span>`).join('') : '<span class="empty">Type something to see tokens.</span>'; };
+const tokCount = (t) => { const w = t.trim().split(/\s+/).filter(Boolean).length; return w ? `${w} ${w === 1 ? 'word' : 'words'} became ${tokenize(t).length} tokens` : ''; };
+
+function dist(opts, T) {
+  const w = opts.map((o) => Math.pow(o[1], 1 / T));
+  const s = w.reduce((a, b) => a + b, 0);
+  return w.map((x) => x / s);
+}
+
+const widgets = {
+  tokenizer: {
+    init: (c) => ({ text: c.props.text }),
+    html: (c, w) => `<label class="sr" for="tokin">Text to split into tokens</label>
+      <textarea id="tokin" class="field" rows="3" maxlength="140">${esc(w.text)}</textarea>
+      <div class="tokens" id="toks">${tokChips(w.text)}</div><div class="count" id="tokc">${tokCount(w.text)}</div>
+      ${c.props.note ? `<p class="fine">${esc(c.props.note)}</p>` : ''}`,
+    input(e, c, w) {
+      if (e.target.id !== 'tokin') return;
+      w.text = e.target.value; $('#toks').innerHTML = tokChips(w.text); $('#tokc').textContent = tokCount(w.text);
+    }
+  },
+  temperature: {
+    init: () => ({ T: 1, hist: [] }),
+    html(c, w) {
+      const o = c.props.options, d = dist(o, w.T);
+      const bars = o.map((x, i) => `<div class="brow"><span>${esc(x[0])}</span><div class="track"><i id="b${i}" style="width:${(d[i] * 100).toFixed(1)}%"></i></div><span class="pc" id="p${i}">${Math.round(d[i] * 100)}%</span></div>`).join('');
+      return `<div class="sent">${esc(c.props.prompt)} <span class="blank" id="blank">${esc(w.hist.length ? w.hist[w.hist.length - 1] : '___')}</span></div>
+        <div class="bars">${bars}</div>
+        <div class="range"><label for="tempr">Temperature <span id="tv">${w.T.toFixed(1)}</span></label>
+        <input id="tempr" type="range" min="0.1" max="2" step="0.1" value="${w.T}"><div class="ends"><span>Focused</span><span>Wild</span></div></div>
+        <button class="btn sun" data-act="wact" data-w="sample">${esc(c.props.button || 'Sample')}</button>
+        <div class="hist" id="hist">${w.hist.map((h) => `<span>${esc(h)}</span>`).join('')}</div>`;
+    },
+    input(e, c, w) {
+      if (e.target.id !== 'tempr') return;
+      w.T = +e.target.value; w.hist = [];
+      dist(c.props.options, w.T).forEach((v, i) => { $('#b' + i).style.width = (v * 100).toFixed(1) + '%'; $('#p' + i).textContent = Math.round(v * 100) + '%'; });
+      $('#tv').textContent = w.T.toFixed(1); $('#hist').innerHTML = ''; $('#blank').textContent = '___';
+    },
+    act(name, c, w) {
+      if (name !== 'sample') return;
+      const o = c.props.options, d = dist(o, w.T);
+      let r = Math.random(), k = 0;
+      for (; k < d.length - 1; k++) { r -= d[k]; if (r <= 0) break; }
+      w.hist.push(o[k][0]); if (w.hist.length > 10) w.hist.shift();
+      $('#blank').textContent = o[k][0]; $('#hist').innerHTML = w.hist.map((h) => `<span>${esc(h)}</span>`).join('');
+    }
+  }
+};
+const W = (c) => (L.w[c.id] || (L.w[c.id] = widgets[c.widget].init(c)));
+
+/* ---------- lessons ---------- */
+const cur = () => L.queue[L.i] || {};
+
+function initLesson(o) {
+  L = { id: o.id || null, title: o.title, practice: !!o.practice, lesson: o.lesson || null,
+        queue: o.cards.map((c) => ({ ...c })), i: 0, done: 0, first: 0,
+        checks: o.cards.filter((c) => CHECKABLE.includes(c.type)).length, total: o.cards.length,
+        sel: null, ord: [], pairs: {}, msel: null, phase: 'ask', ok: false, out: false, fin: false, w: {}, conf: '', xp: 0, acc: 100, bonus: false };
+  S.lesson = true; S.modal = null; S.rs = true; render();
+}
+function openLesson(id) {
+  regen();
+  if (!P.pro && P.hearts <= 0) {
+    const acts = [{ label: 'Get unlimited hearts with Pro', act: 'pro', cls: 'brand' }];
+    if (CFG.demo) acts.push({ label: 'Refill hearts (demo)', act: 'refillHome', cls: 'sun' });
+    acts.push({ label: 'Close', act: 'close', cls: 'ghost' });
+    S.modal = { title: 'Out of hearts', body: `Your next heart arrives in about ${heartWait()} min. Pro members never run out.`, actions: acts };
+    render(); return;
+  }
+  const les = LES[id];
+  initLesson({ id, title: les.title, lesson: les, cards: les.cards });
+}
+function startPractice() {
+  const cards = [];
+  for (const m of P.missed) {
+    const les = LES[m.l], c = les && les.cards.find((x) => x.id === m.c);
+    if (c) cards.push({ ...c, _m: m });
+    if (cards.length >= 5) break;
+  }
+  if (!cards.length) { P.missed = []; save(); render(); return; }
+  initLesson({ title: 'Practice', practice: true, cards });
+}
+function addMissed(lid, cid) { if (!P.missed.some((m) => m.l === lid && m.c === cid)) P.missed.push({ l: lid, c: cid }); }
+function removeMissed(m) { P.missed = P.missed.filter((x) => !(x.l === m.l && x.c === m.c)); }
+
+function confetti() {
+  const cols = ['#5B5BFF', '#FFC93C', '#33D6A8', '#FF7391']; let h = '';
+  for (let i = 0; i < 30; i++) h += `<span style="left:${(Math.random() * 100).toFixed(1)}%;background:${cols[i % 4]};animation-delay:${(Math.random() * 0.7).toFixed(2)}s;animation-duration:${(1.9 + Math.random() * 1.5).toFixed(2)}s;transform:rotate(${Math.floor(Math.random() * 360)}deg)"></span>`;
+  return `<div class="confetti" aria-hidden="true">${h}</div>`;
+}
+function complete() {
+  L.acc = L.checks ? Math.round((L.first / L.checks) * 100) : 100;
+  let xp;
+  if (L.practice) xp = CFG.xp.practice;
+  else {
+    const firstTime = !P.done[L.id];
+    xp = firstTime ? (L.lesson.xp || CFG.xp.lesson) : CFG.xp.replay;
+    if (L.acc === 100 && L.checks && CFG.xp.perfectBonus) { xp += CFG.xp.perfectBonus; L.bonus = true; }
+    const prev = P.done[L.id] || { n: 0, best: 0 };
+    P.done[L.id] = { n: prev.n + 1, best: Math.max(prev.best, L.acc) };
+  }
+  P.xp += xp; L.xp = xp; touchStreak(); save();
+  L.fin = true; L.done = L.total; L.conf = confetti();
+}
+function advance() {
+  const c = cur();
+  const play = c.type === 'concept' || c.type === 'widget';
+  if (play || L.ok) L.done++;
+  else if (!c.retry) L.queue.push({ ...c, retry: true });
+  else L.done++;
+  L.i++; L.sel = null; L.ord = []; L.pairs = {}; L.msel = null; L.phase = 'ask'; L.ok = false; S.rs = true;
+  if (L.i >= L.queue.length) complete();
+  render();
+}
+const ansText = (c) => ((c.type === 'mc' || c.type === 'fill') ? 'Answer: ' + c.options[c.answer] + '. ' : '');
+
+/* ---------- views ---------- */
+function topHTML() {
+  const s = streakNow();
+  return `<div class="brand">${mascot(30)}${esc(CFG.name.toLowerCase())}</div>
+  <div class="stats">
+    <div class="pill" aria-label="${s} day streak">${ic.flame()}${s}</div>
+    <div class="pill" aria-label="${P.xp} XP">${ic.bolt()}${P.xp}</div>
+    <button class="pill" data-act="pro" aria-label="${P.pro ? 'Unlimited' : P.hearts} hearts. See plans">${ic.heart()}${P.pro ? '∞' : P.hearts}</button>
+  </div>`;
+}
+function navHTML() {
+  const t = [['learn', 'Learn', ic.home()], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()]];
+  return t.map((x) => `<button data-tab="${x[0]}" ${S.tab === x[0] ? 'aria-current="page"' : ''}><span class="ico">${x[2]}${x[0] === 'practice' && P.missed.length ? `<span class="dot" aria-label="${P.missed.length} to review">${P.missed.length}</span>` : ''}</span>${x[1]}</button>`).join('');
+}
+function homeHTML() {
+  const st = lessonStates();
+  let h = '';
+  C.tracks.forEach((t) => {
+    if (C.tracks.length > 1) h += `<h2 class="trk">${esc(t.title)}</h2>`;
+    t.units.forEach((u, ui) => {
+      const n = u.lessons.length, doneN = u.lessons.filter((id) => st[id] === 'done').length;
+      const header = (tag, extra) => `<${tag} ${extra}><h2>Unit ${ui + 1}: ${esc(u.title)}</h2><p>${esc(u.blurb || '')}</p></${tag}>`;
+      if (u.tier === 'pro' && !P.pro) {
+        h += `<button class="unit pro" data-act="pro"><div><h2>Unit ${ui + 1}: ${esc(u.title)}</h2><p>${esc(u.blurb || '')}</p></div><span class="tag">${ic.lock(14)}Pro</span></button>`;
+        return;
+      }
+      const all = doneN === n;
+      if (all && !S.open[u.id]) {
+        h += `<button class="unit-mini" data-act="toggleUnit" data-u="${esc(u.id)}"><span class="badge">${ic.check(20)}</span><span><h3>Unit ${ui + 1}: ${esc(u.title)}</h3><p>${n} of ${n} lessons complete. Tap to review.</p></span></button>`;
+        return;
+      }
+      const cls = `unit c-${u.color || 'brand'}`;
+      h += all ? header('button', `class="${cls}" data-act="toggleUnit" data-u="${esc(u.id)}"`) : header('div', `class="${cls}"`);
+      h += '<div class="path">' + u.lessons.map((id, i) => {
+        const les = LES[id], s = st[id], dx = Math.round(Math.sin(i * 1.2) * 46);
+        const icon = s === 'done' ? ic.check(30) : s === 'current' ? ic.star(40) : ic.lock(28);
+        const label = s === 'done' ? 'completed' : s === 'current' ? 'start' : 'locked';
+        const bub = s === 'current' ? `<div class="bubble">${doneN === 0 && ui === 0 ? 'Start' : 'Up next'}</div>` : '';
+        return `<div class="step ${s}" style="--dx:${dx}px">${bub}<button class="node ${s}" data-act="node" data-id="${esc(id)}" aria-label="${esc(les.title)}, ${label}">${icon}</button><div class="lbl">${esc(les.title)}</div></div>`;
+      }).join('') + '</div>';
+    });
+  });
+  return h + '<p class="soon">More units are on the way.</p>';
+}
+function practiceHTML() {
+  const n = P.missed.length, total = flat().length, doneN = Object.keys(P.done).length;
+  const head = n
+    ? `<div class="card">${mascot(84)}<h2>${n} ${n === 1 ? 'question' : 'questions'} to review</h2><p>Questions you missed come back here until you get them right.</p><button class="btn brand" data-act="practice">Review now</button></div>`
+    : `<div class="card">${mascot(84)}<h2>Nothing to review yet</h2><p>Questions you miss show up here so you can lock them in.</p><button class="btn brand" data-act="goLearn">Go to lessons</button></div>`;
+  return `<h1 class="ph">Practice</h1><p class="sub">A few minutes on what you've missed beats a long re-read.</p>${head}
+    <div class="tiles solo"><div class="tile" style="--c:var(--mint)"><b>Lessons done</b><span>${doneN}/${total}</span></div><div class="tile" style="--c:var(--sun)"><b>Total XP</b><span>${P.xp}</span></div><div class="tile" style="--c:var(--coral)"><b>Day streak</b><span>${streakNow()}</span></div></div>`;
+}
+function plansHTML() {
+  const y = S.billing === 'year', per = y ? 'year' : 'month';
+  const li = (t) => `<li>${ic.check(18)}<span>${esc(t)}</span></li>`;
+  const cards = CFG.plans.map((p) => {
+    const note = typeof p.note === 'object' ? p.note[per] : (p.note || '');
+    const sub = p.sub && p.sub[per] ? p.sub[per] : '';
+    let btn;
+    if (p.id === 'free') btn = `<button class="btn" disabled>${P.pro && CFG.demo ? 'Included' : esc(p.cta)}</button>`;
+    else if (p.id === 'pro' && CFG.demo && P.pro) btn = `<button class="btn ghost" data-act="plan" data-p="pro">Pro is on (demo). Turn off</button>`;
+    else btn = `<button class="btn ${p.cls || 'brand'}" data-act="plan" data-p="${esc(p.id)}">${esc(p.cta)}</button>`;
+    return `<section class="plan ${p.highlight ? 'pro' : ''}"><h2>${esc(p.name)}</h2><div class="price">${esc(p.price[per])}<span class="per">${esc((p.per && p.per[per]) || '')}</span></div>
+      <p class="note">${esc(note)}${sub ? ' ' + esc(sub) : ''}</p><ul>${p.features.map(li).join('')}</ul>${btn}</section>`;
+  }).join('');
+  return `<h1 class="ph">Pick your plan</h1><p class="sub">Start free. Upgrade when you want every track.</p>
+    <div class="seg" role="group" aria-label="Billing period">
+      <button data-act="bill" data-v="month" aria-pressed="${!y}">Monthly</button>
+      <button data-act="bill" data-v="year" aria-pressed="${y}">Yearly<em>save ${esc((CFG.billing && CFG.billing.yearlySavings) || '')}</em></button>
+    </div>${cards}<p class="foot">${esc(CFG.plansNote || '')}</p>
+    ${CFG.demo ? '<button class="btn ghost" data-act="reset">Reset demo progress</button>' : ''}`;
+}
+function modalHTML() {
+  const m = S.modal;
+  return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${esc(m.title)}</h2><p>${esc(m.body)}</p><div class="stack">${m.actions.map((a) => `<button class="btn ${a.cls}" data-act="${a.act}">${esc(a.label)}</button>`).join('')}</div></div></div>`;
+}
+
+/* lesson body / footer */
+function bodyHTML(c) {
+  if (L.fin) {
+    return `<div class="done">${L.conf}${mascot(128, 'cheer')}<h1>${L.practice ? 'Practice complete' : 'Lesson complete'}</h1>
+      <p>${L.practice ? 'Reviewing what you missed is how it sticks.' : 'Nice work. ' + (L.bonus ? 'A perfect run earns bonus XP.' : 'Keep the streak going.')}</p>
+      <div class="tiles"><div class="tile" style="--c:var(--sun)"><b>XP earned</b><span>+${L.xp}</span></div><div class="tile" style="--c:var(--mint)"><b>Accuracy</b><span>${L.acc}%</span></div><div class="tile" style="--c:var(--coral)"><b>Day streak</b><span>${streakNow()}</span></div></div></div>`;
+  }
+  if (L.out) return `<div class="done">${mascot(120, 'sad')}<h1>Out of hearts</h1><p>Hearts refill over time. Pro members never run out.</p></div>`;
+  const chk = L.phase === 'fb';
+  const say = (mood) => `<div class="say">${mascot(64, mood || c.mood)}<div class="bub">${md(c.say)}</div></div>`;
+  if (c.type === 'concept') {
+    return `<div class="say">${mascot(88, c.mood)}<div class="bub">${md(c.say)}</div></div>` +
+      (c.points ? `<ul class="pts">${c.points.map((p) => `<li>${md(p)}</li>`).join('')}</ul>` : '');
+  }
+  if (c.type === 'widget') return say() + widgets[c.widget].html(c, W(c));
+  if (c.type === 'mc') {
+    return `<h2 class="q">${md(c.q)}</h2>` + c.options.map((t, i) => {
+      const cls = chk ? (i === c.answer ? 'right' : i === L.sel ? 'wrong' : '') : '';
+      return `<button class="opt ${cls}" data-act="pick" data-i="${i}" aria-pressed="${L.sel === i}" ${chk ? 'disabled' : ''}>${md(t)}</button>`;
+    }).join('');
+  }
+  if (c.type === 'fill') {
+    const blank = L.sel !== null ? esc(c.options[L.sel]) : '';
+    return `<h2 class="q">${md(c.q || 'Fill in the blank')}</h2><div class="sent">${esc(c.before)} <span class="blank">${blank || '&nbsp;'}</span> ${esc(c.after)}</div><div style="height:12px"></div>` +
+      c.options.map((t, i) => {
+        const cls = chk ? (i === c.answer ? 'right' : i === L.sel ? 'wrong' : '') : '';
+        return `<button class="opt ${cls}" data-act="pick" data-i="${i}" aria-pressed="${L.sel === i}" ${chk ? 'disabled' : ''}>${esc(t)}</button>`;
+      }).join('');
+  }
+  if (c.type === 'spot') {
+    return `<h2 class="q">${md(c.q)}</h2>` + c.sentences.map((t, i) => {
+      const cls = chk ? (i === c.answer ? 'right' : i === L.sel ? 'wrong' : '') : '';
+      return `<button class="opt ${cls}" data-act="pick" data-i="${i}" aria-pressed="${L.sel === i}" ${chk ? 'disabled' : ''}>${esc(t)}</button>`;
+    }).join('');
+  }
+  if (c.type === 'order') {
+    const bank = c._b || (c._b = shuffled(c.steps.length, c.id));
+    const remaining = bank.filter((i) => !L.ord.includes(i));
+    const ansCls = (pos) => (chk ? (L.ord[pos] === pos ? 'right' : 'wrong') : '');
+    const answer = L.ord.length
+      ? L.ord.map((si, pos) => `<button class="chip ${ansCls(pos)}" data-act="chip" data-side="ans" data-i="${si}" ${chk ? 'disabled' : ''}><span class="n">${pos + 1}</span>${esc(c.steps[si])}</button>`).join('')
+      : '<p class="hintline">Tap the steps below in order</p>';
+    const fix = chk && !L.ok ? `<h3 class="cor">Correct order</h3><div class="bank">${c.steps.map((s, i) => `<div class="chip right"><span class="n">${i + 1}</span>${esc(s)}</div>`).join('')}</div>` : '';
+    return `<h2 class="q">${md(c.q)}</h2><div class="ans">${answer}</div>` +
+      (chk ? fix : `<div class="bank">${remaining.map((si) => `<button class="chip" data-act="chip" data-side="bank" data-i="${si}">${esc(c.steps[si])}</button>`).join('')}</div>`);
+  }
+  if (c.type === 'match') {
+    const n = c.pairs.length, rs = c._r || (c._r = shuffled(n, c.id + 'm'));
+    const inv = {}; Object.keys(L.pairs).forEach((l) => { inv[L.pairs[l]] = +l; });
+    const left = c.pairs.map((p, i) => {
+      const paired = L.pairs[i] !== undefined;
+      const cls = chk ? (L.pairs[i] === i ? 'right' : 'wrong') : '';
+      return `<button class="mbtn ${cls}" data-act="mleft" data-i="${i}" aria-pressed="${L.msel === i}" ${chk ? 'disabled' : ''}>${paired ? `<span class="n">${i + 1}</span>` : ''}<span>${esc(p[0])}</span></button>`;
+    }).join('');
+    const right = rs.map((ri) => {
+      const l = inv[ri], paired = l !== undefined;
+      const cls = chk && paired ? (l === ri ? 'right' : 'wrong') : '';
+      return `<button class="mbtn ${cls}" data-act="mright" data-i="${ri}" ${chk ? 'disabled' : ''}>${paired ? `<span class="n">${l + 1}</span>` : ''}<span>${esc(c.pairs[ri][1])}</span></button>`;
+    }).join('');
+    return `<h2 class="q">${md(c.q)}</h2><p class="fine" style="margin:-8px 0 14px">Tap an item on the left, then its match on the right.</p><div class="mcols"><div class="mcol">${left}</div><div class="mcol">${right}</div></div>` +
+      (chk && !L.ok ? `<h3 class="cor">Correct matches</h3><div class="mcol">${c.pairs.map((p) => `<div class="chip right">${esc(p[0])}: ${esc(p[1])}</div>`).join('')}</div>` : '');
+  }
+  return '';
+}
+function footHTML(c) {
+  if (L.fin) return '<div class="l-foot"><button class="btn brand" data-act="finish">Continue</button></div>';
+  if (L.out) return '<div class="l-foot"><div class="stack"><button class="btn brand" data-act="goPro">Get unlimited hearts with Pro</button>' + (CFG.demo ? '<button class="btn sun" data-act="refill">Refill hearts (demo)</button>' : '') + '<button class="btn ghost" data-act="quit">Quit lesson</button></div></div>';
+  if (L.phase === 'fb') {
+    const bad = !L.ok;
+    return `<div class="l-foot ${bad ? 'bad' : 'ok'}"><div class="fb ${bad ? 'bad' : 'ok'}">${bad ? 'Not quite' : 'Right'}</div><p class="why">${bad ? esc(ansText(c)) : ''}${md(c.why)}</p><button class="btn ${bad ? 'coral' : 'mint'}" data-act="next">Continue</button></div>`;
+  }
+  if (c.type === 'concept' || c.type === 'widget') return '<div class="l-foot"><button class="btn brand" data-act="next">Continue</button></div>';
+  const ready = c.type === 'order' ? L.ord.length === c.steps.length : c.type === 'match' ? Object.keys(L.pairs).length === c.pairs.length : L.sel !== null;
+  return `<div class="l-foot"><button class="btn brand" data-act="check" ${ready ? '' : 'disabled'}>Check</button></div>`;
+}
+function lessonHTML() {
+  const c = cur(), pct = Math.min(100, Math.round((L.done / L.total) * 100));
+  const hearts = L.practice ? '' : `<div class="hp" aria-label="${P.pro ? 'Unlimited' : P.hearts} hearts">${ic.heart()}${P.pro ? '∞' : P.hearts}</div>`;
+  return `<section class="lesson" aria-label="${esc(L.title)}"><div class="l-top"><button class="x" data-act="quit" aria-label="Quit lesson">${ic.x()}</button>
+    <div class="bar" role="progressbar" aria-label="Lesson progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>${hearts || '<span style="min-width:52px"></span>'}</div>
+    <div class="l-body">${bodyHTML(c)}</div>${footHTML(c)}</section>`;
+}
+
+/* ---------- render ---------- */
+function render() {
+  const shell = $('#shell');
+  regen();
+  const ae = document.activeElement; let fk = null;
+  if (ae && ae !== document.body && ae.dataset && (ae.dataset.act || ae.dataset.tab)) {
+    fk = ae.dataset.tab ? `[data-tab="${ae.dataset.tab}"]` : `[data-act="${ae.dataset.act}"]` + (ae.dataset.i !== undefined ? `[data-i="${ae.dataset.i}"]` : '') + (ae.dataset.v ? `[data-v="${ae.dataset.v}"]` : '') + (ae.dataset.p ? `[data-p="${ae.dataset.p}"]` : '');
+  }
+  const m0 = shell.querySelector('.main'), l0 = shell.querySelector('.l-body');
+  const ms = m0 ? m0.scrollTop : 0, ls = l0 ? l0.scrollTop : 0;
+  const lock = S.lesson || S.modal;
+  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : plansHTML();
+  shell.innerHTML = `<header class="top" ${lock ? 'inert' : ''}>${topHTML()}</header><main class="main" ${lock ? 'inert' : ''}>${view}</main><nav class="nav" aria-label="Main" ${lock ? 'inert' : ''}>${navHTML()}</nav>${S.lesson && L ? lessonHTML() : ''}${S.modal ? modalHTML() : ''}`;
+  const m1 = shell.querySelector('.main'), l1 = shell.querySelector('.l-body');
+  if (!S.rs) { if (m1) m1.scrollTop = ms; if (l1) l1.scrollTop = ls; }
+  S.rs = false;
+  if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); }
+  else if (fk) { const el = shell.querySelector(fk); if (el && !el.disabled) el.focus({ preventScroll: true }); }
+  $('#live').textContent = (S.lesson && L && L.phase === 'fb') ? (L.ok ? 'Right' : 'Not quite') : '';
+}
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
+  $('#shell').appendChild(t); setTimeout(() => t.remove(), 2600);
+}
+
+/* ---------- actions ---------- */
+const A = {
+  node(b) {
+    const id = b.dataset.id, s = lessonStates()[id];
+    if (s === 'locked') { S.modal = { title: 'Locked', body: 'Finish the lesson before this one to unlock it.', actions: [{ label: 'Got it', act: 'close', cls: 'brand' }] }; render(); return; }
+    openLesson(id);
+  },
+  toggleUnit(b) { S.open[b.dataset.u] = !S.open[b.dataset.u]; render(); },
+  close() { S.modal = null; render(); },
+  pro() { S.modal = null; S.tab = 'plans'; S.rs = true; render(); },
+  bill(b) { S.billing = b.dataset.v; render(); },
+  plan(b) {
+    if (CFG.demo && b.dataset.p === 'pro') { P.pro = !P.pro; if (P.pro) P.hearts = CFG.hearts.max; save(); toast(P.pro ? 'Pro is on for this demo. Everything is unlocked.' : 'Pro is off.'); render(); return; }
+    toast("Prototype only. Checkout isn't connected.");
+  },
+  reset() { S.modal = { title: 'Reset demo progress?', body: 'This clears XP, streak, hearts, completed lessons and missed questions on this device.', actions: [{ label: 'Reset progress', act: 'resetYes', cls: 'coral' }, { label: 'Cancel', act: 'close', cls: 'ghost' }] }; render(); },
+  resetYes() { P = fresh(); save(); S.modal = null; S.tab = 'learn'; S.open = {}; S.rs = true; render(); },
+  goLearn() { S.tab = 'learn'; S.rs = true; render(); },
+  practice() { startPractice(); },
+  refillHome() { P.hearts = CFG.hearts.max; save(); S.modal = null; render(); },
+  quit() { L = null; S.lesson = false; S.rs = true; save(); render(); },
+  goPro() { L = null; S.lesson = false; S.tab = 'plans'; S.rs = true; render(); },
+  refill() { P.hearts = CFG.hearts.max; save(); L.out = false; advance(); },
+  pick(b) { L.sel = +b.dataset.i; render(); },
+  chip(b) {
+    const i = +b.dataset.i;
+    if (b.dataset.side === 'bank') { if (!L.ord.includes(i)) L.ord.push(i); } else L.ord = L.ord.filter((x) => x !== i);
+    render();
+  },
+  mleft(b) { const i = +b.dataset.i; if (L.pairs[i] !== undefined) delete L.pairs[i]; L.msel = L.msel === i ? null : i; render(); },
+  mright(b) {
+    const r = +b.dataset.i, holder = Object.keys(L.pairs).find((k) => L.pairs[k] === r);
+    if (L.msel !== null) { if (holder !== undefined) delete L.pairs[holder]; L.pairs[L.msel] = r; L.msel = null; }
+    else if (holder !== undefined) delete L.pairs[holder];
+    render();
+  },
+  check() {
+    const c = cur();
+    let ok;
+    if (c.type === 'order') ok = L.ord.length === c.steps.length && L.ord.every((v, i) => v === i);
+    else if (c.type === 'match') ok = c.pairs.every((_, i) => L.pairs[i] === i);
+    else ok = L.sel === c.answer;
+    L.ok = ok; L.phase = 'fb';
+    if (!ok && !L.practice) loseHeart();
+    if (ok && !c.retry) L.first++;
+    if (!ok && !c.retry && !L.practice) addMissed(L.id, c.id);
+    if (ok && !c.retry && L.practice && c._m) removeMissed(c._m);
+    save(); render();
+  },
+  next() {
+    if (L.phase === 'fb' && !L.ok && !P.pro && P.hearts === 0 && !L.practice) { L.out = true; render(); return; }
+    advance();
+  },
+  wact(b) { const c = cur(); widgets[c.widget].act && widgets[c.widget].act(b.dataset.w, c, W(c)); },
+  finish() { L = null; S.lesson = false; S.rs = true; render(); }
+};
+
+document.addEventListener('click', (e) => {
+  if (!CFG) return;
+  if (e.target.classList && e.target.classList.contains('scrim')) { A.close(); return; }
+  const t = e.target.closest('[data-tab]');
+  if (t) { S.tab = t.dataset.tab; S.rs = true; render(); return; }
+  const b = e.target.closest('[data-act]');
+  if (b && A[b.dataset.act]) A[b.dataset.act](b);
+});
+document.addEventListener('input', (e) => {
+  if (!L || !S.lesson) return;
+  const c = cur();
+  if (c.type === 'widget' && widgets[c.widget].input) widgets[c.widget].input(e, c, W(c));
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.modal) A.close(); });
+
+/* ---------- boot ---------- */
+(async function boot() {
+  try {
+    const c = await load();
+    CFG = c.config; C = c.course; LES = c.lessons; KEY = CFG.storageKey || 'nibble.v1';
+    P = Object.assign(fresh(), store.get(KEY) || {});
+    document.title = CFG.name + ': ' + CFG.tagline;
+    render();
+  } catch (err) {
+    $('#shell').innerHTML = '<p style="padding:24px">Could not load content: ' + esc(err.message) + '. If you opened src/index.html directly, run <code>npm run dev</code> instead, or open dist/index.html after <code>npm run build</code>.</p>';
+  }
+})();
+})();
+
+</script>
+</body>
+</html>

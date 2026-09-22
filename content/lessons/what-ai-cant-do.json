@@ -1,0 +1,76 @@
+{
+  "id": "what-ai-cant-do",
+  "title": "What AI can't do",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "AI is fast and great with patterns. It is weaker at knowing when it's wrong. Good users understand both sides.",
+      "points": [
+        "Strong at: drafting, summarizing, sorting, spotting patterns",
+        "Weak at: exact facts on demand, events after its training data, admitting what it doesn't know"
+      ]
+    },
+    {
+      "id": "c2",
+      "type": "mc",
+      "q": "An assistant gives a confident answer with no source. What should you do before relying on it?",
+      "options": [
+        "Trust it, since it sounded sure",
+        "Ask the same question louder",
+        "Check it against a source you trust"
+      ],
+      "answer": 2,
+      "why": "Confidence isn't evidence. Models can state wrong things fluently, so verify anything that matters."
+    },
+    {
+      "id": "c3",
+      "type": "mc",
+      "q": "Myth or fact: an LLM always knows today's news.",
+      "options": [
+        "Myth",
+        "Fact"
+      ],
+      "answer": 0,
+      "why": "A model only knows what was in its training data, which stops at some date. Tools like web search can add fresh information."
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "Which job is riskiest to hand to an AI with no human check?",
+      "options": [
+        "Drafting a first reply to an email",
+        "Brainstorming names for a project",
+        "Summarizing an article you will also skim",
+        "Working out a patient's medication dose"
+      ],
+      "answer": 3,
+      "why": "When a wrong answer can cause real harm, a person must verify. Low-stakes drafting is where AI helps most."
+    },
+    {
+      "id": "c5",
+      "type": "order",
+      "q": "Put a safe AI workflow in order",
+      "steps": [
+        "Ask the AI for a draft",
+        "Check the facts that matter",
+        "Fix anything wrong or unclear",
+        "Send it under your own name"
+      ],
+      "why": "You stay accountable. The AI drafts, and you verify and decide."
+    },
+    {
+      "id": "c6",
+      "type": "fill",
+      "before": "AI works best as an",
+      "after": "to your judgment, not a replacement for it.",
+      "options": [
+        "oracle",
+        "authority",
+        "assistant"
+      ],
+      "answer": 2,
+      "why": "Use AI to speed up your work, and keep the final call yourself."
+    }
+  ]
+}

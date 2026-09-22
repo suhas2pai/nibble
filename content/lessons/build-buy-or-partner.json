@@ -1,0 +1,79 @@
+{
+  "id": "build-buy-or-partner",
+  "title": "Build, buy or partner",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "Most AI decisions aren't \"should we use AI\". They're **build it, buy a product, or bring in a partner**. Each trades speed, cost and control differently."
+    },
+    {
+      "id": "c2",
+      "type": "match",
+      "q": "Match each option to its main trade-off",
+      "pairs": [
+        [
+          "Buy an existing product",
+          "Fast to start, less control over the details"
+        ],
+        [
+          "Build in-house",
+          "Most control, slowest and most expensive"
+        ],
+        [
+          "Partner with a vendor",
+          "A middle ground: some customization, shared risk"
+        ]
+      ],
+      "why": "None of these is always right. The best fit depends on how unique your need is and how much upkeep you can commit to."
+    },
+    {
+      "id": "c3",
+      "type": "mc",
+      "q": "Which situation usually favors buying instead of building?",
+      "options": [
+        "The task is common across many companies, like scheduling or transcription",
+        "The task depends entirely on data only your company has",
+        "You want to fully control the model's behavior forever"
+      ],
+      "answer": 0,
+      "why": "If many companies need the same thing, someone has likely already built and refined it. Building it yourself there mostly means re-inventing it, slower."
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "Which situation usually favors building in-house?",
+      "options": [
+        "The workflow is core to your edge and hard to buy off the shelf",
+        "You want something running by next week",
+        "Nobody on the team has time to maintain it"
+      ],
+      "answer": 0,
+      "why": "Build where it's central to your advantage and worth the ongoing investment. Buy where it isn't."
+    },
+    {
+      "id": "c5",
+      "type": "spot",
+      "q": "One of these vendor-evaluation habits is weak. Tap it.",
+      "sentences": [
+        "Ask how the vendor handles your data and who can see it.",
+        "Pick whichever product's website lists the most features.",
+        "Ask what happens to your workflow if you switch vendors later."
+      ],
+      "answer": 1,
+      "why": "A long feature list doesn't tell you whether it solves your actual problem. Ask about your specific use case, and about the exit."
+    },
+    {
+      "id": "c6",
+      "type": "order",
+      "q": "Put a sound evaluation process in order",
+      "steps": [
+        "Define what the task actually needs to do",
+        "Compare build, buy and partner options against that",
+        "Run a small pilot with real data",
+        "Decide, based on the pilot's results"
+      ],
+      "why": "Define the need first, or every option looks equally appealing."
+    }
+  ]
+}

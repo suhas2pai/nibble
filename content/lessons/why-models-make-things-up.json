@@ -1,0 +1,60 @@
+{
+  "id": "why-models-make-things-up",
+  "title": "Why models make things up",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "An LLM is built to produce text that is **likely**, not text that is **true**. When it doesn't know, it can still write a fluent guess. That's called a **hallucination**."
+    },
+    {
+      "id": "c2",
+      "type": "mc",
+      "q": "Why can a model invent a source that looks real?",
+      "options": [
+        "It wants to trick you",
+        "It writes plausible-sounding text rather than looking facts up",
+        "Its database has typos"
+      ],
+      "answer": 1,
+      "why": "It predicts likely-looking text. A citation-shaped string is likely, whether or not the paper exists."
+    },
+    {
+      "id": "c3",
+      "type": "spot",
+      "q": "Tap the red flag.",
+      "sentences": [
+        "The answer explains the idea in plain language.",
+        "The answer cites a very specific paper you can't find anywhere.",
+        "The answer says it's unsure and suggests checking a primary source."
+      ],
+      "answer": 1,
+      "why": "Precise-looking details you can't verify are a classic hallucination sign. Hedging and pointing to sources are healthier signs."
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "Which habit most reduces made-up answers?",
+      "options": [
+        "Ask for a longer answer",
+        "Give it the source text and ask it to answer from that",
+        "Ask the same question more forcefully"
+      ],
+      "answer": 1,
+      "why": "Grounding the answer in text you provide gives the model facts to work from instead of guessing. This is the idea behind RAG."
+    },
+    {
+      "id": "c5",
+      "type": "fill",
+      "before": "When it doesn't know, a model may write a fluent",
+      "after": "instead of saying so.",
+      "options": [
+        "guess",
+        "apology",
+        "backup"
+      ],
+      "answer": 0,
+      "why": "Fluent doesn't mean correct. Treat confident answers as claims to check."
+    }
+  ]
+}

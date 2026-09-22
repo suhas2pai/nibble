@@ -1,0 +1,72 @@
+{
+  "id": "what-is-an-agent",
+  "title": "What is an agent?",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "A chatbot answers. An **agent** can also act: it works toward a goal, chooses tools, checks results and repeats until it's done."
+    },
+    {
+      "id": "c2",
+      "type": "order",
+      "q": "Put the agent loop in order",
+      "steps": [
+        "Look at the goal and what's known",
+        "Choose a tool and use it",
+        "Read the result",
+        "Decide: done, or go around again"
+      ],
+      "why": "Look, act, read, decide. The loop repeats until the goal is met or a person steps in."
+    },
+    {
+      "id": "c3",
+      "type": "match",
+      "q": "Match each tool to its job",
+      "pairs": [
+        [
+          "Web search",
+          "Finds fresh information"
+        ],
+        [
+          "Calculator",
+          "Does exact math"
+        ],
+        [
+          "Database query",
+          "Looks up company records"
+        ],
+        [
+          "Email draft",
+          "Prepares a message for a person to review"
+        ]
+      ],
+      "why": "Tools give the model abilities it lacks on its own, like fresh data and exact math."
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "An agent is able to issue refunds. Which design is safest?",
+      "options": [
+        "Let it refund anything to keep customers happy",
+        "A person approves refunds above a set amount",
+        "Hide refunds from the logs"
+      ],
+      "answer": 1,
+      "why": "Limits and human approval for risky actions keep agents useful and safe. The costlier a mistake, the more oversight it needs."
+    },
+    {
+      "id": "c5",
+      "type": "fill",
+      "before": "Rules and approvals that limit what an agent can do are called",
+      "after": ".",
+      "options": [
+        "shortcuts",
+        "plugins",
+        "guardrails"
+      ],
+      "answer": 2,
+      "why": "Guardrails define what an agent may do on its own and what needs a person."
+    }
+  ]
+}
