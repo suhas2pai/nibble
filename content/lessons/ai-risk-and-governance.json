@@ -1,0 +1,83 @@
+{
+  "id": "ai-risk-and-governance",
+  "title": "AI risk and governance",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "Governance isn't about slowing AI down. It's about knowing which uses need a light touch, and which need real oversight, before something goes wrong."
+    },
+    {
+      "id": "c2",
+      "type": "match",
+      "q": "Match the AI use to its rough risk level",
+      "pairs": [
+        [
+          "Drafting an internal email",
+          "Low: a person reads it before it goes anywhere"
+        ],
+        [
+          "Approving loan applications",
+          "High: it directly affects someone's rights"
+        ],
+        [
+          "Summarizing your own meeting notes",
+          "Low: mistakes are cheap and easy to catch"
+        ],
+        [
+          "Screening job candidates",
+          "High: it can systematically exclude people"
+        ]
+      ],
+      "why": "Risk depends on what happens if it's wrong and who it affects, not on how advanced the technology is."
+    },
+    {
+      "id": "c3",
+      "type": "mc",
+      "q": "Which control matters most for a high-risk use, like a hiring or lending decision?",
+      "options": [
+        "A polished user interface",
+        "A human review step and a way to audit outcomes",
+        "Using the newest model available"
+      ],
+      "answer": 1,
+      "why": "For decisions that affect people's lives, oversight and the ability to audit outcomes matter more than raw model quality."
+    },
+    {
+      "id": "c4",
+      "type": "mc",
+      "q": "Myth or fact: one AI policy document is enough to manage AI risk across a company.",
+      "options": [
+        "Myth",
+        "Fact"
+      ],
+      "answer": 0,
+      "why": "A policy sets expectations, but risk still needs a case-by-case look, since a chatbot FAQ and an automated approval system carry very different risk."
+    },
+    {
+      "id": "c5",
+      "type": "spot",
+      "q": "One of these governance habits backfires. Tap it.",
+      "sentences": [
+        "Review high-risk use cases before they launch, not after.",
+        "Route every low-risk internal draft through a formal review board.",
+        "Keep a record of what data informed each system."
+      ],
+      "answer": 1,
+      "why": "Heavy review on low-risk work slows teams down without cutting real risk, and it teaches people to route around governance entirely. Save the heavy process for what actually needs it."
+    },
+    {
+      "id": "c6",
+      "type": "fill",
+      "before": "A good governance approach matches the amount of oversight to the",
+      "after": "of the use case.",
+      "options": [
+        "risk",
+        "logo",
+        "hype"
+      ],
+      "answer": 0,
+      "why": "Match the process to the stakes. Light review for low-stakes work, real oversight for anything that can seriously hurt someone if it's wrong."
+    }
+  ]
+}

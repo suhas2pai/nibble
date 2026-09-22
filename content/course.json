@@ -33,7 +33,7 @@
           "title": "Prompting",
           "blurb": "Write prompts that get better answers",
           "color": "coral",
-          "tier": "pro",
+          "tier": "free",
           "lessons": [
             "prompt-basics"
           ]
@@ -43,9 +43,29 @@
           "title": "Agents and tools",
           "blurb": "Let models take actions, safely",
           "color": "sun",
-          "tier": "pro",
+          "tier": "free",
           "lessons": [
-            "what-is-an-agent"
+            "what-is-an-agent",
+            "the-agent-loop",
+            "agent-guardrails"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "for-leaders",
+      "title": "For leaders",
+      "units": [
+        {
+          "id": "leading-ai",
+          "title": "Leading AI work",
+          "blurb": "What to ask before you fund, build or govern an AI project",
+          "color": "mint",
+          "tier": "free",
+          "lessons": [
+            "why-ai-matters-for-leaders",
+            "build-buy-or-partner",
+            "ai-risk-and-governance"
           ]
         }
       ]
