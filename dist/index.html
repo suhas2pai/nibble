@@ -46,6 +46,8 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;margin:0}
 
 #shell{position:relative;height:100%;max-width:440px;margin:0 auto;background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+.public-shell{width:100%;max-width:1180px!important;height:100vh!important;margin:0 auto;background:var(--bg);display:block!important;overflow-y:auto!important;overflow-x:hidden!important}
+.public-shell .landing{width:min(100%,760px);min-height:100%;margin:0 auto;padding:56px 32px 64px}.public-shell .about-page{width:min(100%,820px);padding:32px 24px 64px}.public-shell .scrim{position:fixed}.public-shell .sheet{max-width:460px}
 @media (min-width:480px) and (max-width:859px){#shell{box-shadow:0 0 0 1px var(--line),0 24px 60px rgba(34,32,74,.2)}}
 
 /* desktop / wide browser layout: sidebar nav + centered content column, instead of a phone card */
@@ -788,7 +790,8 @@ function render() {
   const m0 = shell.querySelector('.main'), l0 = shell.querySelector('.l-body');
   const ms = m0 ? m0.scrollTop : 0, ls = l0 ? l0.scrollTop : 0;
   const lock = S.lesson || S.modal;
-  if (!ACCOUNT) { shell.innerHTML = (S.publicAbout ? aboutHTML() : landingHTML()) + (S.modal ? modalHTML() : ''); applySettings(); if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); } return; }
+  if (!ACCOUNT) { shell.className = 'public-shell'; shell.innerHTML = (S.publicAbout ? aboutHTML() : landingHTML()) + (S.modal ? modalHTML() : ''); applySettings(); if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); } return; }
+  shell.className = '';
   const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : S.tab === 'dashboard' ? dashboardHTML() : S.tab === 'community' ? communityHTML() : S.tab === 'about' ? aboutHTML() : accountHTML();
   shell.innerHTML = `<header class="top" ${lock ? 'inert' : ''}>${topHTML()}</header><main class="main" ${lock ? 'inert' : ''}>${view}</main><nav class="nav" aria-label="Main" ${lock ? 'inert' : ''}>${navHTML()}</nav>${S.lesson && L ? lessonHTML() : ''}${S.modal ? modalHTML() : ''}`;
   const m1 = shell.querySelector('.main'), l1 = shell.querySelector('.l-body');

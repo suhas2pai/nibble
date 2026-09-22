@@ -506,7 +506,8 @@ function render() {
   const m0 = shell.querySelector('.main'), l0 = shell.querySelector('.l-body');
   const ms = m0 ? m0.scrollTop : 0, ls = l0 ? l0.scrollTop : 0;
   const lock = S.lesson || S.modal;
-  if (!ACCOUNT) { shell.innerHTML = (S.publicAbout ? aboutHTML() : landingHTML()) + (S.modal ? modalHTML() : ''); applySettings(); if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); } return; }
+  if (!ACCOUNT) { shell.className = 'public-shell'; shell.innerHTML = (S.publicAbout ? aboutHTML() : landingHTML()) + (S.modal ? modalHTML() : ''); applySettings(); if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); } return; }
+  shell.className = '';
   const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : S.tab === 'dashboard' ? dashboardHTML() : S.tab === 'community' ? communityHTML() : S.tab === 'about' ? aboutHTML() : accountHTML();
   shell.innerHTML = `<header class="top" ${lock ? 'inert' : ''}>${topHTML()}</header><main class="main" ${lock ? 'inert' : ''}>${view}</main><nav class="nav" aria-label="Main" ${lock ? 'inert' : ''}>${navHTML()}</nav>${S.lesson && L ? lessonHTML() : ''}${S.modal ? modalHTML() : ''}`;
   const m1 = shell.querySelector('.main'), l1 = shell.querySelector('.l-body');
