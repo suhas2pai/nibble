@@ -88,6 +88,8 @@ h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;margin:0}
 .account-pill{max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:var(--brand-text)}
 
 .main{flex:1;overflow-y:auto;padding:18px 16px 28px}
+.welcome{display:flex;align-items:baseline;gap:7px;margin:2px 0 18px;color:var(--ink2);font:500 18px 'Fredoka',sans-serif}
+.welcome strong{color:var(--brand-text);font-size:26px}
 
 /* nav */
 .nav{display:flex;background:var(--surface);border-top:2px solid var(--line);flex:none}
@@ -225,6 +227,7 @@ h1,h2,h3{font-family:'Fredoka',system-ui,sans-serif;margin:0}
 .account-form input:focus{border-color:var(--brand);outline:0;box-shadow:0 0 0 3px var(--brand-soft)}
 .auth-error{color:var(--bad-text)!important;font-size:14px;margin:0 0 12px!important}
 .account-email{font:600 17px 'Fredoka',sans-serif;color:var(--brand-text)!important}
+.account-page{background:var(--surface);border:2px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px}
 .toast{position:absolute;left:16px;right:16px;bottom:82px;background:var(--ink);color:var(--bg);border-radius:14px;padding:12px 16px;font-weight:600;text-align:center;z-index:60}
 
 @media (prefers-reduced-motion: reduce){
@@ -369,7 +372,8 @@ const ic = {
   x: (s = 22) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>`,
   home: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg>`,
   loop: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M20.5 3.5v5.5H15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
-  gem: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z" fill="currentColor"/></svg>`
+  gem: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z" fill="currentColor"/></svg>`,
+  user: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21a8 8 0 0 1 16 0" fill="currentColor"/></svg>`
 };
 function mascot(size, mood) {
   mood = mood || 'happy';
@@ -553,12 +557,12 @@ function topHTML() {
   </div>`;
 }
 function navHTML() {
-  const t = [['learn', 'Learn', ic.home()], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()]];
+  const t = [['learn', 'Learn', ic.home()], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()], ['account', 'Account', ic.user()]];
   return t.map((x) => `<button data-tab="${x[0]}" ${S.tab === x[0] ? 'aria-current="page"' : ''}><span class="ico">${x[2]}${x[0] === 'practice' && P.missed.length ? `<span class="dot" aria-label="${P.missed.length} to review">${P.missed.length}</span>` : ''}</span>${x[1]}</button>`).join('');
 }
 function homeHTML() {
   const st = lessonStates();
-  let h = '';
+  let h = ACCOUNT && ACCOUNT.firstName ? `<div class="welcome"><span>Welcome back,</span><strong>${esc(ACCOUNT.firstName)}</strong></div>` : '';
   C.tracks.forEach((t) => {
     if (C.tracks.length > 1) h += `<h2 class="trk">${esc(t.title)}</h2>`;
     t.units.forEach((u, ui) => {
@@ -614,6 +618,11 @@ function plansHTML() {
     </div>${cards}<p class="foot">${esc(CFG.plansNote || '')}</p>
     ${CFG.demo ? '<button class="btn ghost" data-act="reset">Reset demo progress</button>' : ''}`;
 }
+function accountHTML() {
+  return `<h1 class="ph">Your account</h1><p class="sub">Keep your profile up to date while you learn.</p>
+    <section class="account-page"><p class="account-email">${esc(ACCOUNT.email)}</p><form id="profile-form" class="account-form"><label for="profile-first">First name</label><input id="profile-first" name="firstName" type="text" autocomplete="given-name" maxlength="40" required value="${esc(ACCOUNT.firstName || '')}"><label for="profile-last">Last name</label><input id="profile-last" name="lastName" type="text" autocomplete="family-name" maxlength="40" required value="${esc(ACCOUNT.lastName || '')}"><button class="btn brand" type="submit">Save profile</button></form><p class="fine">Your progress is saved in this browser for this account. Cross-device sync needs a connected server.</p></section>
+    <button class="btn coral" data-act="signout">Sign out</button>`;
+}
 function modalHTML() {
   const m = S.modal;
   if (m.kind === 'auth') {
@@ -621,9 +630,6 @@ function modalHTML() {
     return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${signup ? 'Create your account' : 'Welcome back'}</h2><p>${signup ? 'Save your Nibble progress to this browser with an email and password.' : 'Sign in to continue your saved lessons.'}</p>
       <form id="auth-form" class="account-form"><label for="auth-email">Email</label><input id="auth-email" name="email" type="email" autocomplete="email" required value="${esc(m.email || '')}"><label for="auth-password">Password</label><input id="auth-password" name="password" type="password" autocomplete="${signup ? 'new-password' : 'current-password'}" minlength="8" required><button class="btn brand" type="submit">${signup ? 'Create account' : 'Sign in'}</button></form>
       ${m.error ? `<p class="auth-error" role="alert">${esc(m.error)}</p>` : ''}<button class="btn ghost" data-act="authToggle">${signup ? 'Already have an account? Sign in' : 'New here? Create an account'}</button><button class="btn ghost" data-act="close">Cancel</button></div></div>`;
-  }
-  if (m.kind === 'account') {
-    return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">Your account</h2><p class="account-email">${esc(ACCOUNT.email)}</p><p>Your progress is saved in this browser for this account. Cross-device sync needs a connected server.</p><div class="stack"><button class="btn coral" data-act="signout">Sign out</button><button class="btn ghost" data-act="close">Close</button></div></div></div>`;
   }
   return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${esc(m.title)}</h2><p>${esc(m.body)}</p><div class="stack">${m.actions.map((a) => `<button class="btn ${a.cls}" data-act="${a.act}">${esc(a.label)}</button>`).join('')}</div></div></div>`;
 }
@@ -722,7 +728,7 @@ function render() {
   const m0 = shell.querySelector('.main'), l0 = shell.querySelector('.l-body');
   const ms = m0 ? m0.scrollTop : 0, ls = l0 ? l0.scrollTop : 0;
   const lock = S.lesson || S.modal;
-  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : plansHTML();
+  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : accountHTML();
   shell.innerHTML = `<header class="top" ${lock ? 'inert' : ''}>${topHTML()}</header><main class="main" ${lock ? 'inert' : ''}>${view}</main><nav class="nav" aria-label="Main" ${lock ? 'inert' : ''}>${navHTML()}</nav>${S.lesson && L ? lessonHTML() : ''}${S.modal ? modalHTML() : ''}`;
   const m1 = shell.querySelector('.main'), l1 = shell.querySelector('.l-body');
   if (!S.rs) { if (m1) m1.scrollTop = ms; if (l1) l1.scrollTop = ls; }
@@ -738,7 +744,7 @@ function toast(msg) {
 
 /* ---------- actions ---------- */
 const A = {
-  account() { S.modal = ACCOUNT ? { kind: 'account' } : { kind: 'auth', mode: 'signin', email: '', error: '' }; render(); },
+  account() { if (!ACCOUNT) { S.modal = { kind: 'auth', mode: 'signin', email: '', error: '' }; render(); return; } S.tab = 'account'; S.rs = true; render(); },
   authToggle() { S.modal.mode = S.modal.mode === 'signup' ? 'signin' : 'signup'; S.modal.error = ''; render(); },
   async authSubmit(form) {
     const email = emailKey(form.email.value), password = form.password.value;
@@ -756,6 +762,12 @@ const A = {
     S.modal = null; render(); toast('Signed in. Progress loaded.');
   },
   signout() { save(); ACCOUNT = null; store.set(ACCOUNT_KEY, null); P = fresh(); S.modal = null; S.tab = 'learn'; S.open = {}; S.rs = true; render(); toast('Signed out.'); },
+  profileSubmit(form) {
+    const firstName = form.firstName.value.trim(), lastName = form.lastName.value.trim();
+    if (!firstName || !lastName) { toast('Add both your first and last name.'); return; }
+    ACCOUNT = { ...ACCOUNT, firstName, lastName };
+    save(); render(); toast('Profile saved.');
+  },
   node(b) {
     const id = b.dataset.id, s = lessonStates()[id];
     if (s === 'locked') { S.modal = { title: 'Locked', body: 'Finish the lesson before this one to unlock it.', actions: [{ label: 'Got it', act: 'close', cls: 'brand' }] }; render(); return; }
@@ -815,11 +827,12 @@ document.addEventListener('click', (e) => {
   if (!CFG) return;
   if (e.target.classList && e.target.classList.contains('scrim')) { A.close(); return; }
   const t = e.target.closest('[data-tab]');
-  if (t) { S.tab = t.dataset.tab; S.rs = true; render(); return; }
+  if (t) { if (t.dataset.tab === 'account') { A.account(); return; } S.tab = t.dataset.tab; S.rs = true; render(); return; }
   const b = e.target.closest('[data-act]');
   if (b && A[b.dataset.act]) A[b.dataset.act](b);
 });
 document.addEventListener('submit', (e) => {
+  if (e.target.id === 'profile-form') { e.preventDefault(); A.profileSubmit(e.target); return; }
   if (e.target.id !== 'auth-form') return;
   e.preventDefault();
   A.authSubmit(e.target);
