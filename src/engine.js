@@ -9,7 +9,7 @@ const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`
 const CHECKABLE = ['mc', 'fill', 'spot', 'order', 'match'];
 
 let CFG, C, LES, P, KEY, ACCOUNT, ACCOUNT_KEY, ACCOUNTS_KEY;
-const S = { tab: 'learn', modal: null, lesson: false, rs: false, open: {}, billing: 'year', search: '' };
+const S = { tab: 'learn', modal: null, lesson: false, rs: false, open: {}, billing: 'year', search: '', publicAbout: false };
 let L = null;
 
 /* ---------- content loading ---------- */
@@ -124,6 +124,7 @@ const ic = {
   loop: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.6-5.9" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/><path d="M20.5 3.5v5.5H15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   gem: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12l4 6-10 12L2 9z" fill="currentColor"/></svg>`,
   user: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21a8 8 0 0 1 16 0" fill="currentColor"/></svg>`
+  ,info: (s = 24) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10v6M12 7.5v.1" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>`
 };
 function mascot(size, mood) {
   mood = mood || 'happy';
@@ -307,7 +308,7 @@ function topHTML() {
   </div>`;
 }
 function navHTML() {
-  const t = [['learn', 'Learn', ic.home()], ['dashboard', 'Progress', ic.star(24)], ['community', 'Community', ic.gem()], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()], ['account', 'Account', ic.user()]];
+  const t = [['learn', 'Learn', ic.home()], ['dashboard', 'Progress', ic.star(24)], ['community', 'Community', ic.gem()], ['practice', 'Practice', ic.loop()], ['plans', 'Plans', ic.gem()], ['about', 'About', ic.info()], ['account', 'Account', ic.user()]];
   return t.map((x) => `<button data-tab="${x[0]}" ${S.tab === x[0] ? 'aria-current="page"' : ''}><span class="ico">${x[2]}${x[0] === 'practice' && P.missed.length ? `<span class="dot" aria-label="${P.missed.length} to review">${P.missed.length}</span>` : ''}</span>${x[1]}</button>`).join('');
 }
 function homeHTML() {
@@ -387,13 +388,16 @@ function accountHTML() {
     <section class="account-page"><h2>Change password</h2><p class="fine">Use your current password to choose a new one.</p><form id="password-form" class="account-form"><label for="current-password">Current password</label><input id="current-password" name="current" type="password" autocomplete="current-password" minlength="8" required><label for="new-password">New password</label><input id="new-password" name="next" type="password" autocomplete="new-password" minlength="8" required><button class="btn mint" type="submit">Change password</button></form></section>
     <button class="btn coral" data-act="signout">Sign out</button>`;
 }
+function aboutHTML() {
+  return `<div class="about-page"><div class="about-hero"><div class="about-mark">${mascot(72, 'cheer')}<span>${esc(CFG.name.toLowerCase())}</span></div><p class="eyebrow">Our mission</p><h1>Make everyone AI literate.</h1><p>Nibble helps people understand AI well enough to use it with confidence, curiosity, and care.</p></div><section class="about-section"><span class="about-kicker">Why Nibble exists</span><h2>AI is becoming part of every job.</h2><p>People should not need a computer science degree to understand what an AI system can do, where it can fail, or how to ask better questions. Nibble turns intimidating ideas into short lessons that people can actually finish.</p></section><section class="about-grid"><article><b>Clear</b><p>Plain language, one idea at a time, with jargon explained instead of assumed.</p></article><article><b>Practical</b><p>Prompts, examples, and decisions that transfer from a lesson into real work.</p></article><article><b>Responsible</b><p>We teach the limits, risks, and human judgment that make AI useful.</p></article></section><section class="about-section"><span class="about-kicker">The Nibble method</span><h2>Small lessons. Strong instincts.</h2><p>Learn a concept, try it immediately, get feedback, and return for spaced review. Your path grows from foundations to prompting, agents, leadership, and the skills your work needs next.</p><div class="about-steps"><div><strong>01</strong><span>Understand</span></div><div><strong>02</strong><span>Practice</span></div><div><strong>03</strong><span>Apply</span></div></div></section><section class="about-section about-founder"><span class="about-kicker">Built by</span><h2>Suhas Pai</h2><p>Nibble is built around a simple belief: AI literacy should be a practical life skill, available to everyone, not a private advantage for a few specialists.</p></section><section class="about-section about-roadmap"><span class="about-kicker">Where we are going</span><h2>A more capable, more thoughtful AI community.</h2><p>We are building toward guided learning paths, trusted certificates, team learning, and a community where people can share useful AI practice without losing sight of safety or human judgment.</p></section>${ACCOUNT ? '<button class="btn brand" data-act="goLearn">Back to learning</button>' : '<button class="btn brand" data-act="aboutSignup">Start learning with Nibble</button>'}</div>`;
+}
 function communityHTML() {
   const code = P.referrals.code || (P.referrals.code = (ACCOUNT.firstName || 'nibble').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) + Math.floor(100 + Math.random() * 900));
   const today = dayKey(), challengeDone = P.challenge.date === today;
   return `<h1 class="ph">Community</h1><p class="sub">Learn together, share progress, and keep the momentum going.</p><section class="feature-hero"><span class="eyebrow">Daily challenge</span><h2>Spot the risky AI habit</h2><p>Which habit is most likely to cause trouble in a real workflow?</p><button class="btn ${challengeDone ? 'ghost' : 'brand'}" data-act="dailyChallenge" ${challengeDone ? 'disabled' : ''}>${challengeDone ? 'Completed today' : 'Take today\'s challenge'}</button></section><section class="card community-card"><h2>Choose your path</h2><p>Tell Nibble what you want to do with AI.</p><div class="path-options">${['Lead AI work', 'Write better prompts', 'Build with agents'].map((x) => `<button class="path-choice ${P.analytics.path === x ? 'selected' : ''}" data-act="choosePath" data-v="${esc(x)}">${x}</button>`).join('')}</div><p class="fine">${P.analytics.path ? `Your route: ${esc(P.analytics.path)}` : 'Choose a route to personalize your map.'}</p></section><section class="card community-card"><h2>Prompt practice lab</h2><p>Turn a vague request into a useful prompt.</p><textarea class="practice-input" id="sandbox-prompt" rows="3" placeholder="Make a good report"></textarea><button class="btn mint" data-act="improvePrompt">Improve my prompt</button>${P.analytics.last && P.analytics.last.name === 'prompt_improved' ? `<p class="sandbox-result">Try: ${esc(P.analytics.last.data)}</p>` : ''}</section><section class="card community-card"><h2>Create a challenge</h2><p>Draft a card to share with your learning circle.</p><input class="field" id="custom-challenge" placeholder="Write a question about AI"><button class="btn brand" data-act="saveChallenge">Save challenge draft</button><p class="fine">${P.customChallenges.length} draft${P.customChallenges.length === 1 ? '' : 's'} saved</p></section><section class="card community-card"><h2>Invite your circle</h2><p>Share your code and earn a bonus when a friend joins.</p><div class="invite-code">${esc(code)}</div><button class="btn sun" data-act="copyReferral">Copy invite code</button><p class="fine">${P.referrals.invites} invite${P.referrals.invites === 1 ? '' : 's'} recorded</p></section><section class="card community-card"><h2>${esc(P.league.name)}</h2><p>Small weekly leagues keep learning friendly and focused.</p><div class="league-row"><b>You</b><span>${P.xp} XP</span></div>${P.league.members.map((m) => `<div class="league-row"><b>${esc(m.name)}</b><span>${m.xp} XP</span></div>`).join('')}<button class="btn mint" data-act="addLeagueMember">Add sample teammate</button></section><section class="card community-card"><h2>Team learning preview</h2><p>See how a team could track learning together.</p><div class="league-row"><b>Team completion</b><span>${Math.min(100, Math.round((Object.keys(P.done).length / flat().length) * 100))}%</span></div><div class="league-row"><b>Most practiced</b><span>${P.analytics.path || 'AI basics'}</span></div></section><section class="card community-card"><h2>Your certificates</h2><p>${P.certificates.length ? P.certificates.join(' · ') : 'Complete a track to earn a shareable certificate.'}</p><button class="btn ghost" data-act="certificate">Preview certificate</button></section>`;
 }
 function landingHTML() {
-  return `<main class="landing"><div class="landing-mark">${mascot(72, 'cheer')}<span>${esc(CFG.name.toLowerCase())}</span></div><p class="eyebrow">AI in bite-size lessons</p><h1>Build better AI instincts, one small lesson at a time.</h1><p class="landing-copy">Learn how AI works, write stronger prompts, and make safer decisions with short, practical lessons that fit into your day.</p><div class="landing-points"><div><b>15</b><span>guided lessons</span></div><div><b>3 min</b><span>per lesson</span></div><div><b>100%</b><span>self-paced</span></div></div><div class="stack"><button class="btn brand" data-act="startSignup">Create free account</button><button class="btn ghost" data-act="startSignin">Sign in</button></div><p class="landing-note">Your progress is saved to your account. This prototype stores accounts in this browser.</p></main>`;
+  return `<main class="landing"><div class="landing-mark">${mascot(72, 'cheer')}<span>${esc(CFG.name.toLowerCase())}</span></div><p class="eyebrow">AI in bite-size lessons</p><h1>Build better AI instincts, one small lesson at a time.</h1><p class="landing-copy">Learn how AI works, write stronger prompts, and make safer decisions with short, practical lessons that fit into your day.</p><div class="landing-points"><div><b>15</b><span>guided lessons</span></div><div><b>3 min</b><span>per lesson</span></div><div><b>100%</b><span>self-paced</span></div></div><div class="stack"><button class="btn brand" data-act="startSignup">Create free account</button><button class="btn ghost" data-act="startSignin">Sign in</button><button class="btn ghost about-link" data-act="aboutPublic">About Nibble</button></div><p class="landing-note">Your progress is saved to your account. This prototype stores accounts in this browser.</p></main>`;
 }
 function modalHTML() {
   const m = S.modal;
@@ -502,8 +506,8 @@ function render() {
   const m0 = shell.querySelector('.main'), l0 = shell.querySelector('.l-body');
   const ms = m0 ? m0.scrollTop : 0, ls = l0 ? l0.scrollTop : 0;
   const lock = S.lesson || S.modal;
-  if (!ACCOUNT) { shell.innerHTML = landingHTML() + (S.modal ? modalHTML() : ''); applySettings(); if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); } return; }
-  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : S.tab === 'dashboard' ? dashboardHTML() : S.tab === 'community' ? communityHTML() : accountHTML();
+  if (!ACCOUNT) { shell.innerHTML = (S.publicAbout ? aboutHTML() : landingHTML()) + (S.modal ? modalHTML() : ''); applySettings(); if (S.modal) { const b = shell.querySelector('.sheet .btn'); if (b) b.focus({ preventScroll: true }); } return; }
+  const view = S.tab === 'learn' ? homeHTML() : S.tab === 'practice' ? practiceHTML() : S.tab === 'plans' ? plansHTML() : S.tab === 'dashboard' ? dashboardHTML() : S.tab === 'community' ? communityHTML() : S.tab === 'about' ? aboutHTML() : accountHTML();
   shell.innerHTML = `<header class="top" ${lock ? 'inert' : ''}>${topHTML()}</header><main class="main" ${lock ? 'inert' : ''}>${view}</main><nav class="nav" aria-label="Main" ${lock ? 'inert' : ''}>${navHTML()}</nav>${S.lesson && L ? lessonHTML() : ''}${S.modal ? modalHTML() : ''}`;
   const m1 = shell.querySelector('.main'), l1 = shell.querySelector('.l-body');
   if (!S.rs) { if (m1) m1.scrollTop = ms; if (l1) l1.scrollTop = ls; }
@@ -520,6 +524,8 @@ function toast(msg) {
 
 /* ---------- actions ---------- */
 const A = {
+  aboutPublic() { S.publicAbout = true; render(); },
+  aboutSignup() { S.publicAbout = false; S.modal = { kind: 'auth', mode: 'signup', email: '', error: '' }; render(); },
   startSignup() { S.modal = { kind: 'auth', mode: 'signup', email: '', error: '' }; render(); },
   startSignin() { S.modal = { kind: 'auth', mode: 'signin', email: '', error: '' }; render(); },
   account() { if (!ACCOUNT) { S.modal = { kind: 'auth', mode: 'signin', email: '', error: '' }; render(); return; } S.tab = 'account'; S.rs = true; render(); },
@@ -607,7 +613,7 @@ const A = {
   },
   reset() { S.modal = { title: 'Reset demo progress?', body: 'This clears XP, streak, hearts, completed lessons and missed questions on this device.', actions: [{ label: 'Reset progress', act: 'resetYes', cls: 'coral' }, { label: 'Cancel', act: 'close', cls: 'ghost' }] }; render(); },
   resetYes() { P = fresh(); save(); S.modal = null; S.tab = 'learn'; S.open = {}; S.rs = true; render(); },
-  goLearn() { S.tab = 'learn'; S.rs = true; render(); },
+  goLearn() { S.publicAbout = false; S.tab = 'learn'; S.rs = true; render(); },
   practice() { startPractice(); },
   refillHome() { P.hearts = CFG.hearts.max; save(); S.modal = null; render(); },
   quit() { L = null; S.lesson = false; S.rs = true; save(); render(); },
@@ -651,7 +657,7 @@ document.addEventListener('click', (e) => {
   if (!CFG) return;
   if (e.target.classList && e.target.classList.contains('scrim')) { A.close(); return; }
   const t = e.target.closest('[data-tab]');
-  if (t) { if (t.dataset.tab === 'account') { A.account(); return; } S.tab = t.dataset.tab; S.rs = true; render(); return; }
+  if (t) { if (t.dataset.tab === 'account') { A.account(); return; } if (t.dataset.tab === 'about') { S.tab = 'about'; S.rs = true; render(); return; } S.tab = t.dataset.tab; S.rs = true; render(); return; }
   const b = e.target.closest('[data-act]');
   if (b && A[b.dataset.act]) A[b.dataset.act](b);
 });
