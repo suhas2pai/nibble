@@ -8,7 +8,7 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 const md = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`(.+?)`/g, '<code>$1</code>');
 const CHECKABLE = ['mc', 'fill', 'spot', 'order', 'match'];
 
-let CFG, C, LES, P, KEY;
+let CFG, C, LES, P, KEY, ACCOUNT, ACCOUNT_KEY, ACCOUNTS_KEY;
 const S = { tab: 'learn', modal: null, lesson: false, rs: false, open: {}, billing: 'year' };
 let L = null;
 
@@ -33,7 +33,20 @@ const store = {
 };
 const now = () => Date.now();
 const fresh = () => ({ xp: 0, streak: 0, lastDay: null, hearts: CFG.hearts.max, heartsAt: now(), done: {}, missed: [], pro: false });
-const save = () => store.set(KEY, P);
+function save() {
+  if (!ACCOUNT) { store.set(KEY, P); return; }
+  const all = store.get(ACCOUNTS_KEY) || {};
+  all[ACCOUNT.email] = { ...ACCOUNT, progress: P };
+  store.set(ACCOUNTS_KEY, all);
+  store.set(ACCOUNT_KEY, ACCOUNT.email);
+}
+function emailKey(email) { return email.trim().toLowerCase(); }
+async function passwordHash(password) {
+  const bytes = new TextEncoder().encode(password);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+function accountProgress(progress) { return Object.assign(fresh(), progress || {}); }
 function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
 function yesterdayKey() { const d = new Date(); d.setDate(d.getDate() - 1); return dayKey(d); }
 const streakNow = () => (P.lastDay === dayKey() || P.lastDay === yesterdayKey() ? P.streak : 0);
@@ -263,11 +276,12 @@ const ansText = (c) => ((c.type === 'mc' || c.type === 'fill') ? 'Answer: ' + c.
 /* ---------- views ---------- */
 function topHTML() {
   const s = streakNow();
-  return `<div class="brand">${mascot(30)}${esc(CFG.name.toLowerCase())}</div>
+  return `<button class="brand brand-btn" data-act="account" aria-label="${ACCOUNT ? 'Open account menu' : 'Sign in or create an account'}">${mascot(30)}${esc(CFG.name.toLowerCase())}</button>
   <div class="stats">
     <div class="pill" aria-label="${s} day streak">${ic.flame()}${s}</div>
     <div class="pill" aria-label="${P.xp} XP">${ic.bolt()}${P.xp}</div>
     <button class="pill" data-act="pro" aria-label="${P.pro ? 'Unlimited' : P.hearts} hearts. See plans">${ic.heart()}${P.pro ? '∞' : P.hearts}</button>
+    <button class="pill account-pill" data-act="account" aria-label="${ACCOUNT ? 'Account: ' + esc(ACCOUNT.email) : 'Sign in or create an account'}">${ACCOUNT ? esc(ACCOUNT.email.split('@')[0]) : 'Sign in'}</button>
   </div>`;
 }
 function navHTML() {
@@ -334,6 +348,15 @@ function plansHTML() {
 }
 function modalHTML() {
   const m = S.modal;
+  if (m.kind === 'auth') {
+    const signup = m.mode === 'signup';
+    return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${signup ? 'Create your account' : 'Welcome back'}</h2><p>${signup ? 'Save your Nibble progress to this browser with an email and password.' : 'Sign in to continue your saved lessons.'}</p>
+      <form id="auth-form" class="account-form"><label for="auth-email">Email</label><input id="auth-email" name="email" type="email" autocomplete="email" required value="${esc(m.email || '')}"><label for="auth-password">Password</label><input id="auth-password" name="password" type="password" autocomplete="${signup ? 'new-password' : 'current-password'}" minlength="8" required><button class="btn brand" type="submit">${signup ? 'Create account' : 'Sign in'}</button></form>
+      ${m.error ? `<p class="auth-error" role="alert">${esc(m.error)}</p>` : ''}<button class="btn ghost" data-act="authToggle">${signup ? 'Already have an account? Sign in' : 'New here? Create an account'}</button><button class="btn ghost" data-act="close">Cancel</button></div></div>`;
+  }
+  if (m.kind === 'account') {
+    return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">Your account</h2><p class="account-email">${esc(ACCOUNT.email)}</p><p>Your progress is saved in this browser for this account. Cross-device sync needs a connected server.</p><div class="stack"><button class="btn coral" data-act="signout">Sign out</button><button class="btn ghost" data-act="close">Close</button></div></div></div>`;
+  }
   return `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${esc(m.title)}</h2><p>${esc(m.body)}</p><div class="stack">${m.actions.map((a) => `<button class="btn ${a.cls}" data-act="${a.act}">${esc(a.label)}</button>`).join('')}</div></div></div>`;
 }
 
@@ -447,6 +470,24 @@ function toast(msg) {
 
 /* ---------- actions ---------- */
 const A = {
+  account() { S.modal = ACCOUNT ? { kind: 'account' } : { kind: 'auth', mode: 'signin', email: '', error: '' }; render(); },
+  authToggle() { S.modal.mode = S.modal.mode === 'signup' ? 'signin' : 'signup'; S.modal.error = ''; render(); },
+  async authSubmit(form) {
+    const email = emailKey(form.email.value), password = form.password.value;
+    S.modal.email = email;
+    if (!email || password.length < 8) { S.modal.error = 'Use a valid email and a password with at least 8 characters.'; render(); return; }
+    const all = store.get(ACCOUNTS_KEY) || {}, existing = all[email], hash = await passwordHash(password);
+    if (S.modal.mode === 'signup') {
+      if (existing) { S.modal.error = 'An account with this email already exists. Sign in instead.'; render(); return; }
+      ACCOUNT = { email, passwordHash: hash, createdAt: new Date().toISOString(), progress: P };
+      all[email] = ACCOUNT; store.set(ACCOUNTS_KEY, all); store.set(ACCOUNT_KEY, email); save();
+      S.modal = null; render(); toast('Account created. Your progress is saved here.'); return;
+    }
+    if (!existing || existing.passwordHash !== hash) { S.modal.error = 'That email or password is not correct.'; render(); return; }
+    ACCOUNT = existing; P = accountProgress(existing.progress); store.set(ACCOUNT_KEY, email); save();
+    S.modal = null; render(); toast('Signed in. Progress loaded.');
+  },
+  signout() { save(); ACCOUNT = null; store.set(ACCOUNT_KEY, null); P = fresh(); S.modal = null; S.tab = 'learn'; S.open = {}; S.rs = true; render(); toast('Signed out.'); },
   node(b) {
     const id = b.dataset.id, s = lessonStates()[id];
     if (s === 'locked') { S.modal = { title: 'Locked', body: 'Finish the lesson before this one to unlock it.', actions: [{ label: 'Got it', act: 'close', cls: 'brand' }] }; render(); return; }
@@ -510,6 +551,11 @@ document.addEventListener('click', (e) => {
   const b = e.target.closest('[data-act]');
   if (b && A[b.dataset.act]) A[b.dataset.act](b);
 });
+document.addEventListener('submit', (e) => {
+  if (e.target.id !== 'auth-form') return;
+  e.preventDefault();
+  A.authSubmit(e.target);
+});
 document.addEventListener('input', (e) => {
   if (!L || !S.lesson) return;
   const c = cur();
@@ -521,8 +567,10 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.modal)
 (async function boot() {
   try {
     const c = await load();
-    CFG = c.config; C = c.course; LES = c.lessons; KEY = CFG.storageKey || 'nibble.v1';
-    P = Object.assign(fresh(), store.get(KEY) || {});
+    CFG = c.config; C = c.course; LES = c.lessons; KEY = CFG.storageKey || 'nibble.v1'; ACCOUNT_KEY = KEY + '.account'; ACCOUNTS_KEY = KEY + '.accounts';
+    const accounts = store.get(ACCOUNTS_KEY) || {}, active = store.get(ACCOUNT_KEY);
+    ACCOUNT = active && accounts[active] ? accounts[active] : null;
+    P = ACCOUNT ? accountProgress(ACCOUNT.progress) : accountProgress(store.get(KEY));
     document.title = CFG.name + ': ' + CFG.tagline;
     render();
   } catch (err) {
