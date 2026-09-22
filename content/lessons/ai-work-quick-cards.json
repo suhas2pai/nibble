@@ -1,0 +1,59 @@
+{
+  "id": "ai-work-quick-cards",
+  "title": "Working with AI in quick cards",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "A **context window** is the amount of text and information a model can consider in one request."
+    },
+    {
+      "id": "c2",
+      "type": "concept",
+      "say": "**Temperature** changes how varied the model's choices are. Lower values are steadier; higher values are more exploratory."
+    },
+    {
+      "id": "c3",
+      "type": "concept",
+      "say": "**Retrieval** gives a model relevant source material before it answers, which can improve accuracy on current or private information."
+    },
+    {
+      "id": "c4",
+      "type": "concept",
+      "say": "An **evaluation** is a repeatable check that measures whether an AI system does the job well enough for its users."
+    },
+    {
+      "id": "c5",
+      "type": "match",
+      "q": "Match each idea to its job",
+      "pairs": [
+        [
+          "Context window",
+          "Sets how much information fits in one request"
+        ],
+        [
+          "Retrieval",
+          "Brings relevant source material into the task"
+        ],
+        [
+          "Evaluation",
+          "Checks quality against a repeatable standard"
+        ]
+      ],
+      "why": "These controls solve different problems: space, useful evidence, and measurable quality."
+    },
+    {
+      "id": "c6",
+      "type": "spot",
+      "q": "Tap the habit that makes AI work less reliable.",
+      "sentences": [
+        "Check important claims against a source.",
+        "Give the model the context it cannot know.",
+        "Assume a polished answer must be true.",
+        "Test the workflow with realistic examples."
+      ],
+      "answer": 2,
+      "why": "A fluent answer can still be wrong. Verification and realistic tests make AI work more dependable."
+    }
+  ]
+}

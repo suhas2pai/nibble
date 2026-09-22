@@ -49,6 +49,17 @@
             "the-agent-loop",
             "agent-guardrails"
           ]
+        },
+        {
+          "id": "quick-cards",
+          "title": "Quick cards",
+          "blurb": "Short refreshers for the AI ideas you will use most",
+          "color": "coral",
+          "tier": "free",
+          "lessons": [
+            "ai-quick-cards",
+            "ai-work-quick-cards"
+          ]
         }
       ]
     },

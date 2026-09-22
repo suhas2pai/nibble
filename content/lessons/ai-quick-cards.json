@@ -1,0 +1,51 @@
+{
+  "id": "ai-quick-cards",
+  "title": "AI concepts in quick cards",
+  "cards": [
+    {
+      "id": "c1",
+      "type": "concept",
+      "say": "**Artificial intelligence** is software that performs tasks that usually need human judgment, like recognizing patterns or generating language."
+    },
+    {
+      "id": "c2",
+      "type": "concept",
+      "say": "**Machine learning** finds useful patterns in examples instead of relying only on rules written by a programmer."
+    },
+    {
+      "id": "c3",
+      "type": "concept",
+      "say": "An **LLM** is a language model trained to predict likely next tokens. It generates an answer one piece at a time."
+    },
+    {
+      "id": "c4",
+      "type": "concept",
+      "say": "A **token** is a chunk of text, such as part of a word, a whole short word, or punctuation. Models read and generate tokens."
+    },
+    {
+      "id": "c5",
+      "type": "mc",
+      "q": "What does a prompt give an AI model?",
+      "options": [
+        "A guaranteed correct answer",
+        "Instructions and context for the task",
+        "A replacement for human judgment"
+      ],
+      "answer": 1,
+      "why": "A prompt gives the model direction and context, but the result still needs checking."
+    },
+    {
+      "id": "c6",
+      "type": "fill",
+      "before": "A confident answer that is not grounded in reliable information is called a",
+      "after": ".",
+      "options": [
+        "hallucination",
+        "token",
+        "context window"
+      ],
+      "answer": 0,
+      "why": "A hallucination is an invented or unsupported answer that may sound plausible."
+    }
+  ]
+}
